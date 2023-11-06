@@ -1,0 +1,10 @@
+# only provide infrastructure related file
+
+flask/
+ancean-back/
+ancean-front/
+
+jenkins/
+secrets/
+
+.DS_Store

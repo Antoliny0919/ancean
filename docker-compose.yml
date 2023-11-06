@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+
+  api:
+    build:  
+      context: ./ancean-back
+      dockerfile: Dockerfile.local
+    container_name: api-local
+    volumes:
+      - ./ancean-back:/usr/app
+    secrets:
+      - source: postgres-connection
+        target: /usr/app/ancean/secrets/postgres-secrets.json
+      - source: django-connection
+        target: /usr/app/ancean/secrets/django-secrets.json
+    ports:
+      - "5050:8000"
+    networks:
+      - default-bridge
+
+  web:
+    build:
+      context: ./ancean-front
+      dockerfile: Dockerfile.local
+    container_name: web-local
+    volumes:
+      - /usr/app/node_modules
+      - ./ancean-front:/usr/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - api
+    ports:
+      - "3030:3000"
+    networks:
+      - default-bridge
+
+secrets:
+  postgres-connection:
+    file: ./secrets/postgres-secrets.json
+  django-connection:
+    file: ./secrets/django-secrets.json
+
+networks:
+  default-bridge:
+    name: dev-net
