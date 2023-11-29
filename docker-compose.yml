@@ -14,6 +14,8 @@ services:
         target: /usr/app/ancean/secrets/postgres-secrets.json
       - source: django-connection
         target: /usr/app/ancean/secrets/django-secrets.json
+      - source: oauth-connection
+        target: /usr/app/ancean/secrets/oauth-secrets.json
     ports:
       - "5050:8000"
     networks:
@@ -41,6 +43,8 @@ secrets:
     file: ./secrets/postgres-secrets.json
   django-connection:
     file: ./secrets/django-secrets.json
+  oauth-connection:
+    file: ./secrets/oauth-secrets.json
 
 networks:
   default-bridge:
