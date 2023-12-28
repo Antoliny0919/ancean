@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-postgres-deploy
+  namespace: {{ .Values.namespace }}
+  labels: 
+    ancean: {{ .Values.env }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-postgres
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-postgres
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-postgres-container
+          image: postgres:15.3
+          {{- if eq .Values.env "stag" }}
+          readinessProbe:
+            tcpSocket:
+              port: 5432
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-h", "localhost"]
+            periodSeconds: 10
+            initialDelaySeconds: 10
+          {{- end }}
+          env:
+            - name: POSTGRES_DB
+              value: "postgres"
+            - name: POSTGRES_USER
+              value: "ancean"
+            - name: POSTGRES_PASSWORD_FILE
+              value: /secrets/postgres_password
+          volumeMounts:
+            - name: secret
+              mountPath: "/secrets"
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: secret
+          secret:
+            secretName: {{ .Release.Name }}-postgres-secret
+            defaultMode: 0400
+            items:
+              - key: POSTGRES_PASSWORD
+                path: postgres_password
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-postgres-pvc

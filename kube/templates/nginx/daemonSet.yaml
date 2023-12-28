@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Release.Name }}-nginx-deploy
+  namespace: {{ .Values.namespace }}
+  labels: 
+    ancean: {{ .Values.env }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-nginx
+  {{- with .Values.nginx.rolloutSpead }}
+  minReadySeconds: {{ .minReadySeconds }}
+  progressDeadlineSeconds: {{ .progressDeadlineSeconds }}
+  {{- end }}
+  {{- if eq .Values.env "stag" }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-nginx
+        version: {{ .Values.version }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-nginx-container
+          image: nginx:1.24.0
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/
+              readOnly: true
+            - name: cache-volume
+              mountPath: /data/nginx/cache
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-nginx-config
+        - name: cache-volume
+          hostPath:
+            path: /volumes/nginx-cache
+            type: DirectoryOrCreate

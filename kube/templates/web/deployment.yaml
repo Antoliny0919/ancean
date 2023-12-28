@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-web-deploy
+  namespace: {{ .Values.namespace }}
+  labels: 
+    ancean: {{ .Values.env }}
+spec: 
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-web
+  {{- with .Values.web.rolloutSpead }}
+  minReadySeconds: {{ .minReadySeconds }}
+  progressDeadlineSeconds: {{ .progressDeadlineSeconds }}
+  {{- end }}
+  {{- if eq .Values.env "stag" }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-web
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-web
+        version: {{ .Values.version }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-web-container
+          image: antoliny0919/ancean-front-test:1.0.5
+          {{- if eq .Values.env "stag" }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            initialDelaySeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            initialDelaySeconds: 20
+          {{- end }}
+          {{- with .Values.web.deploy.resources }}
+          resources:
+            limits:
+              memory: {{ .memory }}
+              cpu: {{ .cpu }}
+          {{- end }}

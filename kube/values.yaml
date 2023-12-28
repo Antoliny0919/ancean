@@ -1,0 +1,45 @@
+# Default values for kube. --> dev env
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+env: dev
+version: v1
+namespace: ancean-dev
+
+resourceQuota:
+  cpu: 1000
+  memory: 1Gi
+
+api:
+  deploy:
+    resources:
+      memory: 400Mi
+      cpu: 500m
+  service:        
+    servicePort: 6060
+    targetPort: 8000
+    serviceType: ClusterIP
+
+web:
+  deploy:
+    resources:
+      memory: 200Mi
+      cpu: 300m
+  service:
+    servicePort: 4040
+    targetPort: 3000
+    serviceType: ClusterIP
+
+postgres:
+  pv:
+    storage: 2Gi
+  service:
+    servicePort: 5432
+    targetPort: 5432
+    serviceType: ClusterIP
+    
+nginx:
+  service:
+    servicePort: 80
+    targetPort: 80
+    serviceType: LoadBalancer

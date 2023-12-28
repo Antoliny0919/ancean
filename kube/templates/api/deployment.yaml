@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-api-deploy
+  namespace: {{ .Values.namespace }}
+  labels: 
+    ancean: {{ .Values.env }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-api
+  {{- with .Values.api.rolloutSpead }}
+  minReadySeconds: {{ .minReadySeconds }}
+  progressDeadlineSeconds: {{ .progressDeadlineSeconds }}
+  {{- end }}
+  {{- if eq .Values.env "stag" }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-api
+        version: {{ .Values.version }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-api-container
+          image: antoliny0919/ancean-back-test:1.0.1
+          volumeMounts:
+            - name: secret
+              mountPath: /usr/app/ancean/secrets
+          {{- if eq .Values.env "stag" }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            initialDelaySeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            initialDelaySeconds: 20
+          {{- end }}
+          {{- with .Values.api.deploy.resources }}
+          resources:
+            limits:
+              memory: {{ .memory }}
+              cpu: {{ .cpu }}
+          {{- end }}
+      volumes:
+      - name: secret
+        secret:
+          secretName: {{ .Release.Name }}-api-secret
+          items:
+            {{- range tuple "django" "postgres" "oauth" }}
+            - key: {{.}}-secrets.json
+              path: {{.}}-secrets.json
+            {{- end }}
