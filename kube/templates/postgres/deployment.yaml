@@ -1,3 +1,4 @@
+{{ $Name := .Release.Name }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,9 +14,13 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-postgres
+      {{- with .Values.postgres.exporter }}
+      annotations:
+        prometheus.io/port: {{ .port | quote }}
+      {{- end }}
     spec:
       containers:
-        - name: {{ .Release.Name }}-postgres-container
+        - name: {{ $Name }}-postgres-container
           image: postgres:15.3
           {{- if eq .Values.env "stag" }}
           readinessProbe:
@@ -40,6 +45,23 @@ spec:
               mountPath: "/secrets"
             - name: data
               mountPath: /var/lib/postgresql/data
+        {{- with .Values.postgres.exporter }}
+        - name: {{ $Name }}-postgres-exporter
+          image: wrouesnel/postgres_exporter:v0.8.0
+          ports:
+            - name: metrics
+              containerPort: {{ .port }}
+          env:
+            - name: DATA_SOURCE_URI
+              value: localhost?sslmode=disable
+            - name: DATA_SOURCE_USER
+              value: {{ .database | quote }}
+            - name: DATA_SOURCE_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: {{ $Name }}-postgres-secret
+        {{- end }}
       volumes:
         - name: secret
           secret:

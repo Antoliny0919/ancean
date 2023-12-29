@@ -39,12 +39,17 @@ postgres:
     servicePort: 5432
     targetPort: 5432
     serviceType: ClusterIP
+  exporter:
+    port: 9187
+    database: postgres
     
 nginx:
   service:
     servicePort: 80
     targetPort: 80
     serviceType: LoadBalancer
+  exporter:
+    port: 9113
 
 prometheus:
   namespace: ancean-stag-prometheus

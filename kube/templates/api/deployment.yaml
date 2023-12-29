@@ -34,18 +34,18 @@ spec:
             - name: secret
               mountPath: /usr/app/ancean/secrets
           {{- if eq .Values.env "stag" }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-            periodSeconds: 30
-            initialDelaySeconds: 20
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-            periodSeconds: 30
-            initialDelaySeconds: 20
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          #   periodSeconds: 30
+          #   initialDelaySeconds: 20
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          #   periodSeconds: 30
+          #   initialDelaySeconds: 20
           {{- end }}
           {{- with .Values.api.deploy.resources }}
           resources:

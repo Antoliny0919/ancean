@@ -1,7 +1,8 @@
+{{ $Env := .Values.env }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ .Release.Name }}-nginx-deploy
+  name: {{ .Release.Name }}-nginx-daemonset
   namespace: {{ .Values.namespace }}
   labels: 
     ancean: {{ .Values.env }}
@@ -25,6 +26,10 @@ spec:
       labels:
         app: {{ .Release.Name }}-nginx
         version: {{ .Values.version }}
+      {{- with .Values.nginx.exporter }}
+      annotations:
+        prometheus.io/port: {{ .port | quote }}
+      {{- end }}
     spec:
       containers:
         - name: {{ .Release.Name }}-nginx-container
@@ -38,6 +43,15 @@ spec:
               readOnly: true
             - name: cache-volume
               mountPath: /data/nginx/cache
+        {{- with .Values.nginx.exporter }}
+        - name: {{ $Env }}-nginx-exporter
+          image: nginx/nginx-prometheus-exporter:1.0.0
+          ports:
+            - name: metrics
+              containerPort: {{ .port }}
+          args:
+            - -nginx.scrape-uri=http://localhost/stub_status
+        {{ end }}
       volumes:
         - name: config
           configMap:
