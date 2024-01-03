@@ -1,9 +1,10 @@
 {{ $Env := .Values.env }}
+{{ $Namespace := .Values.namespace }}
 {{- with .Values.prometheus }}
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ .namespace }}
+  name: {{ $Namespace }}-monitoring
   labels:
     ancean: {{ $Env }}
 {{- end }}

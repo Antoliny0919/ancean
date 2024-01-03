@@ -1,0 +1,21 @@
+{{ $Namespace := .Values.namespace }}
+{{ $Name := .Release.Name }}
+{{ $Env := .Values.env }}
+{{- with .Values.grafana }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $Name }}-grafana-service
+  namespace: {{ $Namespace}}-monitoring
+  labels:
+    ancean: {{ $Env }}
+spec:
+  selector:
+    app: {{ $Name }}-grafana
+  ports:
+    - name: {{ $Name }}-grafana
+      port: {{ .service.servicePort }}
+      targetPort: {{ .service.targetPort }}
+      protocol: TCP
+  type: {{ .service.serviceType }}
+{{- end }}

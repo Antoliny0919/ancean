@@ -1,11 +1,12 @@
 {{ $Name := .Release.Name }}
 {{ $Env := .Values.env }}
+{{ $Namespace := .Values.namespace }}
 {{- with .Values.prometheus }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ $Name }}-prometheus-deploy
-  namespace: {{ .namespace }}
+  namespace: {{ $Namespace }}-monitoring
 spec:
   selector:
     matchLabels:
@@ -37,7 +38,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ .account.name }}-account
-  namespace: {{ .namespace }}
+  namespace: {{ $Namespace }}-monitoring
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -71,5 +72,5 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ .account.name }}-account
-  namespace: {{ .namespace }}
+  namespace: {{ $Namespace }}-monitoring
 {{- end }}

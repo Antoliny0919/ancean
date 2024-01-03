@@ -26,13 +26,18 @@ spec:
       labels:
         app: {{ .Release.Name }}-api
         version: {{ .Values.version }}
+      annotations:
+        prometheus.io/path: "/prometheus/metrics"
     spec:
       containers:
         - name: {{ .Release.Name }}-api-container
-          image: antoliny0919/ancean-back-test:1.0.1
+          image: antoliny0919/ancean-back-test:1.0.2
           volumeMounts:
             - name: secret
               mountPath: /usr/app/ancean/secrets
+          ports:
+            - containerPort: 8000
+              name: http
           {{- if eq .Values.env "stag" }}
           # livenessProbe:
           #   httpGet:

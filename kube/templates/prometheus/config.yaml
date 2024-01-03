@@ -1,12 +1,12 @@
 {{ $Env := .Values.env }}
 {{ $Name := .Release.Name }}
-{{ $TargetNamespace := .Values.namespace }}
+{{ $Namespace := .Values.namespace }}
 {{- with .Values.prometheus }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ $Name }}-prometheus-config
-  namespace: {{ .namespace }}
+  namespace: {{ $Namespace }}-monitoring
 data:
   prometheus.yml: |-
     global:
@@ -20,7 +20,7 @@ data:
         - source_labels: 
             - __meta_kubernetes_namespace
           action: keep
-          regex: {{ $TargetNamespace }}
+          regex: {{ $Namespace }}
         - source_labels: 
             - __meta_kubernetes_pod_annotationpresent_prometheus_io_scrape
             - __meta_kubernetes_pod_annotation_prometheus_io_scrape

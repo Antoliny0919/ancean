@@ -52,10 +52,21 @@ nginx:
     port: 9113
 
 prometheus:
-  namespace: ancean-stag-prometheus
   service:
     servicePort: 9090
     targetPort: 9090
     serviceType: LoadBalancer
   account:
     name: prometheus
+
+grafana:
+  theme: dark
+  user: ancean
+  password: ancean
+  resources:
+    cpu: 250m
+    memory: 750Mi
+  service:
+    servicePort: 3000
+    targetPort: 3000
+    serviceType: LoadBalancer

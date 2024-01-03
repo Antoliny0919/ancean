@@ -21,14 +21,13 @@ spec:
       maxUnavailable: 1
       maxSurge: 1
   {{- end }}
-  selector:
-    matchLabels:
-      app: {{ .Release.Name }}-web
   template:
     metadata:
       labels:
         app: {{ .Release.Name }}-web
         version: {{ .Values.version }}
+      annotations:
+        prometheus.io/scrape: "false"
     spec:
       containers:
         - name: {{ .Release.Name }}-web-container

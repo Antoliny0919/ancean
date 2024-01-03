@@ -1,0 +1,36 @@
+{{ $PrometheusPort := .Values.prometheus.service.servicePort }}
+{{ $Namespace := .Values.namespace }}
+{{ $Name := .Release.Name }}
+{{ $Env := .Values.env }}
+{{- with .Values.grafana }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $Name }}-grafana-config
+  namespace: {{ $Namespace }}-monitoring
+  labels:
+    ancean: {{ $Env }}
+data:
+  datasources.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      url: http://{{ $Name }}-prometheus-service:{{ $PrometheusPort }}
+      basicAuth: false
+      version: 1
+      editable: true
+
+  providers.yaml: |-
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: true
+      updateIntervalSeconds: 0
+      options:
+        path: /var/lib/grafana/dashboards
+{{- end }}

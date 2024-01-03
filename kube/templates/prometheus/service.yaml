@@ -1,11 +1,12 @@
 {{ $Name := .Release.Name }}
 {{ $Env := .Values.env }}
+{{ $Namespace := .Values.namespace }}
 {{- with .Values.prometheus }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ $Name }}-prometheus-service
-  namespace: {{ .namespace }}
+  namespace: {{ $Namespace }}-monitoring
   labels:
     ancean: {{ $Env }}
 spec:
