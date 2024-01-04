@@ -65,8 +65,8 @@ spec:
             - name: config-providers
               mountPath: "/etc/grafana/provisioning/dashboards"
               readOnly: true
-            # - name: dashboards
-            #   mountPath: "/var/lib/grafana/dashboards"
+            - name: dashboards
+              mountPath: "/var/lib/grafana/dashboards"
       
       volumes:
         - name: config-datasources
@@ -81,12 +81,10 @@ spec:
             items:
             - key: providers.yaml
               path: providers.yaml
-        # - name: dashboards
-        #   projected:
-        #       sources:
-        #         - configMap:
-        #             name: grafana-dashboard-apod
-        #         - configMap:
-        #             name: grafana-dashboard-todo-list
+        - name: dashboards
+          projected:
+              sources:
+                - configMap:
+                    name: {{ $Name }}-grafana-dashboard-config
 
 {{- end }}

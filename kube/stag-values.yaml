@@ -41,7 +41,7 @@ postgres:
     serviceType: ClusterIP
   exporter:
     port: 9187
-    database: postgres
+    user: ancean
     
 nginx:
   service:
