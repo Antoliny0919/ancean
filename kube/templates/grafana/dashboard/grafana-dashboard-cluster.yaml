@@ -5,11 +5,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $Name }}-grafana-dashboard-config
+  name: {{ $Name }}-grafana-dashboard-cluster-config
   namespace: {{ $Namespace }}-monitoring
   labels:
     ancean: {{ $Env }}
 data:
-  {{ $Name }}-pods-dashboard.json: |-
+  {{ $Name }}-cluster-dashboard.json: |-
 {{- end }}
-{{ .Files.Get "dashboard/pods-dashboard-config.json" | indent 4 }}
+{{ .Files.Get "dashboard/cluster-dashboard-config.json" | indent 4 }}

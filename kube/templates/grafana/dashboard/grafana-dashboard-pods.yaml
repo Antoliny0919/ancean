@@ -1,0 +1,15 @@
+{{ $Namespace := .Values.namespace }}
+{{ $Name := .Release.Name}}
+{{ $Env := .Values.env }}
+{{- with .Values.grafana }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $Name }}-grafana-dashboard-pods-config
+  namespace: {{ $Namespace }}-monitoring
+  labels:
+    ancean: {{ $Env }}
+data:
+  {{ $Name }}-pods-dashboard.json: |-
+{{- end }}
+{{ .Files.Get "dashboard/pods-dashboard-config.json" | indent 4 }}

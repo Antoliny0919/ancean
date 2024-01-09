@@ -85,6 +85,8 @@ spec:
           projected:
               sources:
                 - configMap:
-                    name: {{ $Name }}-grafana-dashboard-config
+                    name: {{ $Name }}-grafana-dashboard-pods-config
+                - configMap:
+                    name: {{ $Name }}-grafana-dashboard-cluster-config
 
 {{- end }}
