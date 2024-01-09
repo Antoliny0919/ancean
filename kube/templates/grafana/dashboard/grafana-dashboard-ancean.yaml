@@ -11,5 +11,5 @@ metadata:
     ancean: {{ $Env }}
 data:
   {{ $Name }}-pods-dashboard.json: |-
-{{ .Files.Get "dashboard/pods-dashboard-config.json" }}
 {{- end }}
+{{ .Files.Get "dashboard/pods-dashboard-config.json" | indent 4 }}

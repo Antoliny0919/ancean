@@ -319,7 +319,7 @@
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
-          "legendFormat": "{{state}}",
+          "legendFormat": "{{ state }}",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -748,4 +748,4 @@
   "uid": "e6733582-def5-44f4-a65c-61d9cce396c4",
   "version": 1,
   "weekStart": ""
-  }
+}
