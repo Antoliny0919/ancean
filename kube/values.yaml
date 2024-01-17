@@ -18,17 +18,17 @@ api:
   service:        
     servicePort: 6060
     targetPort: 8000
-    serviceType: ClusterIP
+    serviceType: LoadBalancer
 
 web:
   deploy:
     resources:
-      memory: 200Mi
+      memory: 500Mi
       cpu: 300m
   service:
     servicePort: 4040
     targetPort: 3000
-    serviceType: ClusterIP
+    serviceType: LoadBalancer
 
 postgres:
   pv:
@@ -36,7 +36,7 @@ postgres:
   service:
     servicePort: 5432
     targetPort: 5432
-    serviceType: ClusterIP
+    serviceType: LoadBalancer
     
 nginx:
   service:

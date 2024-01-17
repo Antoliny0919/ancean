@@ -1,4 +1,3 @@
-{{ $PrometheusPort := .Values.prometheus.service.servicePort }}
 {{ $Namespace := .Values.namespace }}
 {{ $Name := .Release.Name }}
 {{ $Env := .Values.env }}
@@ -17,7 +16,7 @@ data:
     - name: Prometheus
       type: prometheus
       access: proxy
-      url: http://{{ $Name }}-prometheus-service:{{ $PrometheusPort }}
+      url: http://{{ $Name }}-prometheus-service:9090
       basicAuth: false
       version: 1
       editable: true

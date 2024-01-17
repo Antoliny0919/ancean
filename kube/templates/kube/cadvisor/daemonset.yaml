@@ -1,3 +1,4 @@
+{{- with .Values.prometheus -}}
 apiVersion: apps/v1 
 kind: DaemonSet
 metadata:
@@ -62,3 +63,4 @@ spec:
       - name: disk
         hostPath:
           path: /dev/disk
+{{- end }}
