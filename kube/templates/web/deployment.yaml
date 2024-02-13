@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}-web-container
-          image: antoliny0919/ancean-front-test:1.0.5
+          image: antoliny0919/ancean-front-test:1.0.12
           {{- if eq .Values.env "stag" }}
           # livenessProbe:
           #   httpGet:

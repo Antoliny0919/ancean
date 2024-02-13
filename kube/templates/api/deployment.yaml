@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}-api-container
-          image: antoliny0919/ancean-back-test:1.0.5
+          image: {{ .Values.api.deploy.image }}
           volumeMounts:
             - name: secret
               mountPath: /usr/app/ancean/secrets

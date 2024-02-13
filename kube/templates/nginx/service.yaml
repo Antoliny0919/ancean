@@ -1,14 +1,19 @@
+{{ $Name := .Release.Name }}
+{{ $Namespace := .Values.namespace }}
+{{ $Env := .Values.env }}
+{{- with .Values.nginx }}
 apiVersion: v1
 kind: Service
 metadata: 
-  name: {{ .Release.Name }}-nginx-service
-  namespace: {{ .Values.namespace }}
+  name: {{ $Name }}-nginx-service
+  namespace: {{ $Namespace }}
   labels: 
-    ancean: {{ .Values.env }}
+    ancean: {{ $Env }}
 spec:
   ports:
-    - port: {{ .Values.nginx.service.servicePort }}
-      targetPort: {{ .Values.nginx.service.targetPort }}
+    - port: {{ .service.servicePort }}
+      targetPort: {{ .service.targetPort }}
   selector:
-    app: {{ .Release.Name }}-nginx
-  type: {{ .Values.nginx.service.serviceType }}
+    app: {{ $Name }}-nginx
+  type: {{ .service.serviceType }}
+{{- end }}

@@ -1,20 +1,24 @@
 {{ $Env := .Values.env }}
+{{ $Ver := .Values.version }}
+{{ $Name := .Release.Name }}
+{{ $Namespace := .Values.namespace }}
+{{- with .Values.nginx }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ .Release.Name }}-nginx-daemonset
-  namespace: {{ .Values.namespace }}
+  name: {{ $Name }}-nginx-daemonset
+  namespace: {{ $Namespace }}
   labels: 
-    ancean: {{ .Values.env }}
+    ancean: {{ $Env }}
 spec:
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-nginx
-  {{- with .Values.nginx.rolloutSpead }}
+      app: {{ $Name }}-nginx
+  {{- with .rolloutSpead }}
   minReadySeconds: {{ .minReadySeconds }}
   progressDeadlineSeconds: {{ .progressDeadlineSeconds }}
   {{- end }}
-  {{- if eq .Values.env "stag" }}
+  {{- if eq $Env "stag" }}
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
@@ -24,15 +28,15 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-nginx
-        version: {{ .Values.version }}
-      {{- with .Values.nginx.exporter }}
+        app: {{ $Name }}-nginx
+        version: {{ $Ver }}
+      {{- with .exporter }}
       annotations:
         prometheus.io/port: {{ .port | quote }}
       {{- end }}
     spec:
       containers:
-        - name: {{ .Release.Name }}-nginx-container
+        - name: {{ $Name }}-nginx-container
           image: nginx:1.24.0
           ports:
             - containerPort: 80
@@ -43,7 +47,7 @@ spec:
               readOnly: true
             - name: cache-volume
               mountPath: /data/nginx/cache
-        {{- with .Values.nginx.exporter }}
+        {{- with .exporter }}
         - name: {{ $Env }}-nginx-exporter
           image: nginx/nginx-prometheus-exporter:1.0.0
           ports:
@@ -55,8 +59,9 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ .Release.Name }}-nginx-config
+            name: {{ $Name }}-nginx-config
         - name: cache-volume
           hostPath:
             path: /volumes/nginx-cache
             type: DirectoryOrCreate
+{{- end }}

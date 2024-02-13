@@ -12,6 +12,7 @@ resourceQuota:
 
 api:
   deploy:
+    image: antoliny0919/ancean-back-test:1.0.13
     resources:
       memory: 400Mi
       cpu: 500m
@@ -28,7 +29,7 @@ web:
   service:
     servicePort: 4040
     targetPort: 3000
-    serviceType: LoadBalancer
+    serviceType: ClusterIP
 
 postgres:
   pv:
@@ -36,7 +37,7 @@ postgres:
   service:
     servicePort: 5432
     targetPort: 5432
-    serviceType: LoadBalancer
+    serviceType: ClusterIP
     
 nginx:
   service:

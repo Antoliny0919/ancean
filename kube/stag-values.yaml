@@ -43,14 +43,6 @@ postgres:
     port: 9187
     user: ancean
     
-nginx:
-  service:
-    servicePort: 80
-    targetPort: 80
-    serviceType: LoadBalancer
-  exporter:
-    port: 9113
-
 prometheus:
   service:
     servicePort: 9090

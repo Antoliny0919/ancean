@@ -22,4 +22,5 @@
 *.tmproj
 .vscode/
 
-nginx/
+nginx-ingress/
+ingress.yaml

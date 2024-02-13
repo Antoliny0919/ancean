@@ -1,10 +1,16 @@
+{{ $WebServicePort := .Values.web.service.servicePort }}
+{{ $APIServicePort := .Values.api.service.servicePort }}
+{{ $Name := .Release.Name }}
+{{ $Env := .Values.env }}
+{{ $Namespace := .Values.namespace }}
+{{- with .Values.nginx }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-nginx-config
-  namespace: {{ .Values.namespace }}
+  name: {{ $Name }}-nginx-config
+  namespace: {{ $Namespace }}
   labels: 
-    ancean: {{ .Values.env }}
+    ancean: {{ $Env }}
 data:
   nginx.conf: |-
     user  nginx;
@@ -32,7 +38,7 @@ data:
         listen 80 default_server;
         listen [::]:80 default_server;
         location / {
-          proxy_pass http://{{ .Release.Name }}-web-service:{{ .Values.web.service.servicePort }};
+          proxy_pass http://{{ $Name }}-web-service:{{ $WebServicePort }};
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "upgrade";
           proxy_set_header Host $host;
@@ -42,9 +48,8 @@ data:
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
         }
-
         location /api/ {
-          proxy_pass http://{{ .Release.Name }}-api-service:{{ .Values.api.service.servicePort }};
+          proxy_pass http://{{ $Name }}-api-service:{{ $APIServicePort }};
           proxy_set_header Host $host;
           proxy_cache            STATIC;
           proxy_cache_valid      200  1d;
@@ -52,10 +57,20 @@ data:
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
         }
-        {{- with .Values.nginx.exporter }}
+        location /media/ {
+          proxy_pass http://{{ $Name }}-api-service:{{ $APIServicePort }};
+          proxy_set_header Host $host;
+          proxy_cache            STATIC;
+          proxy_cache_valid      200  1d;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        {{- with .exporter }}
         location /stub_status {
             stub_status;
         }
         {{- end }}
       }
     }
+{{- end }}
