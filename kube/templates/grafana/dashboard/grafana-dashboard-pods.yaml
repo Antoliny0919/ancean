@@ -12,6 +12,4 @@ metadata:
 data:
   {{ $Name }}-pods-dashboard.json: |-
 {{- end }}
-{{- if eq .Values.grafana "true" }}
 {{ .Files.Get "dashboard/pods-dashboard-config.json" | indent 4 }}
-{{- end }}

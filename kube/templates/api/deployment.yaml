@@ -14,13 +14,11 @@ spec:
   minReadySeconds: {{ .minReadySeconds }}
   progressDeadlineSeconds: {{ .progressDeadlineSeconds }}
   {{- end }}
-  {{- if eq .Values.env "stag" }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 1
       maxSurge: 1
-  {{- end }}
   template:
     metadata:
       labels:
@@ -38,7 +36,7 @@ spec:
           ports:
             - containerPort: 8000
               name: http
-          {{- if eq .Values.env "stag" }}
+          # {{- if eq .Values.env "stag" }}
           # livenessProbe:
           #   httpGet:
           #     path: /
@@ -51,13 +49,7 @@ spec:
           #     port: http
           #   periodSeconds: 30
           #   initialDelaySeconds: 20
-          {{- end }}
-          {{- with .Values.api.deploy.resources }}
-          resources:
-            limits:
-              memory: {{ .memory }}
-              cpu: {{ .cpu }}
-          {{- end }}
+          # {{- end }}
       volumes:
       - name: secret
         secret:

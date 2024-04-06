@@ -14,26 +14,26 @@ spec:
   selector:
     matchLabels:
       app: {{ $Name }}-nginx
-  {{- with .rolloutSpead }}
-  minReadySeconds: {{ .minReadySeconds }}
-  progressDeadlineSeconds: {{ .progressDeadlineSeconds }}
-  {{- end }}
-  {{- if eq $Env "stag" }}
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 0
-  {{- end }}
+  # {{- with .rolloutSpead }}
+  # minReadySeconds: {{ .minReadySeconds }}
+  # progressDeadlineSeconds: {{ .progressDeadlineSeconds }}
+  # {{- end }}
+  # {{- if eq $Env "stag" }}
+  # updateStrategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     maxUnavailable: 1
+  #     maxSurge: 0
+  # {{- end }}
   template:
     metadata:
       labels:
         app: {{ $Name }}-nginx
         version: {{ $Ver }}
-      {{- with .exporter }}
-      annotations:
-        prometheus.io/port: {{ .port | quote }}
-      {{- end }}
+      # {{- with .exporter }}
+      # annotations:
+      #   prometheus.io/port: {{ .port | quote }}
+      # {{- end }}
     spec:
       containers:
         - name: {{ $Name }}-nginx-container
@@ -47,15 +47,15 @@ spec:
               readOnly: true
             - name: cache-volume
               mountPath: /data/nginx/cache
-        {{- with .exporter }}
-        - name: {{ $Env }}-nginx-exporter
-          image: nginx/nginx-prometheus-exporter:1.0.0
-          ports:
-            - name: metrics
-              containerPort: {{ .port }}
-          args:
-            - -nginx.scrape-uri=http://localhost/stub_status
-        {{ end }}
+        # {{- with .exporter }}
+        # - name: {{ $Env }}-nginx-exporter
+        #   image: nginx/nginx-prometheus-exporter:1.0.0
+        #   ports:
+        #     - name: metrics
+        #       containerPort: {{ .port }}
+        #   args:
+        #     - -nginx.scrape-uri=http://localhost/stub_status
+        # {{ end }}
       volumes:
         - name: config
           configMap:

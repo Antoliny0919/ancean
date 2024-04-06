@@ -13,3 +13,5 @@ secrets.yaml
 .env
 config/dev/nginx/cache/
 config/dev/data/
+.vagrant
+cert/

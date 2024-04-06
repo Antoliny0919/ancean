@@ -22,5 +22,9 @@
 *.tmproj
 .vscode/
 
-nginx-ingress/
-ingress.yaml
+# web/
+# prometheus/
+# kube/
+# grafana/
+redis/
+ingress/

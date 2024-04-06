@@ -2,9 +2,9 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-env: dev
+env: stag
 version: v1
-namespace: ancean-dev
+namespace: ancean-stag
 
 resourceQuota:
   cpu: 1000
@@ -12,24 +12,23 @@ resourceQuota:
 
 api:
   deploy:
-    image: antoliny0919/ancean-back-test:1.0.13
-    resources:
-      memory: 400Mi
-      cpu: 500m
+    image: antoliny0919/ancean-back-stag:1.0.6
+  rolloutSpead:
+    minReadySeconds: 60
+    progressDeadlineSeconds: 180
   service:        
     servicePort: 6060
     targetPort: 8000
-    serviceType: LoadBalancer
+    serviceType: ClusterIP
 
 web:
-  deploy:
-    resources:
-      memory: 500Mi
-      cpu: 300m
+  rolloutSpead:
+    minReadySeconds: 60
+    progressDeadlineSeconds: 180
   service:
     servicePort: 4040
     targetPort: 3000
-    serviceType: ClusterIP
+    serviceType: LoadBalancer
 
 postgres:
   pv:
@@ -38,9 +37,38 @@ postgres:
     servicePort: 5432
     targetPort: 5432
     serviceType: ClusterIP
-    
+  exporter:
+    port: 9187
+    user: ancean
+
 nginx:
   service:
     servicePort: 80
     targetPort: 80
+    serviceType: LoadBalancer
+
+redis:
+  service:
+    servicePort: 6379
+    targetPort: 6379
+    serviceType: LoadBalancer
+    
+prometheus:
+  service:
+    servicePort: 9090
+    targetPort: 9090
+    serviceType: LoadBalancer
+  account:
+    name: prometheus
+
+grafana:
+  theme: dark
+  user: ancean
+  password: ancean
+  resources:
+    cpu: 250m
+    memory: 750Mi
+  service:
+    servicePort: 3000
+    targetPort: 3000
     serviceType: LoadBalancer

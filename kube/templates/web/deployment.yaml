@@ -14,13 +14,11 @@ spec:
   minReadySeconds: {{ .minReadySeconds }}
   progressDeadlineSeconds: {{ .progressDeadlineSeconds }}
   {{- end }}
-  {{- if eq .Values.env "stag" }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 1
       maxSurge: 1
-  {{- end }}
   template:
     metadata:
       labels:
@@ -31,24 +29,4 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}-web-container
-          image: antoliny0919/ancean-front-test:1.0.12
-          {{- if eq .Values.env "stag" }}
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          #   periodSeconds: 30
-          #   initialDelaySeconds: 20
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          #   periodSeconds: 30
-          #   initialDelaySeconds: 20
-          {{- end }}
-          {{- with .Values.web.deploy.resources }}
-          resources:
-            limits:
-              memory: {{ .memory }}
-              cpu: {{ .cpu }}
-          {{- end }}
+          image: antoliny0919/ancean-front-stag:1.0.2

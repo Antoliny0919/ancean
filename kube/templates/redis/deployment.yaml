@@ -1,0 +1,20 @@
+{{ $Name := .Release.Name }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-redis-deploy
+  namespace: {{ .Values.namespace }}
+  labels: 
+    ancean: {{ .Values.env }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-redis
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-redis
+    spec:
+      containers:
+        - image: redis:7.2.4
+          name: {{ .Release.Name }}-redis-container
