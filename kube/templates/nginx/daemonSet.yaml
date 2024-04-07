@@ -41,10 +41,16 @@ spec:
           ports:
             - containerPort: 80
               name: http
+              protocol: TCP
+            - containerPort: 443
+              name: https
+              protocol: TCP
           volumeMounts:
             - name: config
               mountPath: /etc/nginx/
               readOnly: true
+            - name: cert
+              mountPath: /etc/cert/
             - name: cache-volume
               mountPath: /data/nginx/cache
         # {{- with .exporter }}
@@ -64,4 +70,14 @@ spec:
           hostPath:
             path: /volumes/nginx-cache
             type: DirectoryOrCreate
+        - name: cert
+          secret:
+            secretName: {{ $Name }}-nginx-secret
+            defaultMode: 0400
+            items:
+              key: SSL_KEY_PEM
+              path: ssl_key.pem
+            items:
+              key: SSL_PEM
+              path: ssl.pem
 {{- end }}

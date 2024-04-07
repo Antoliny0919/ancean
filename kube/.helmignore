@@ -22,9 +22,9 @@
 *.tmproj
 .vscode/
 
-# web/
-# prometheus/
-# kube/
-# grafana/
-redis/
+grafana/
 ingress/
+kube/
+prometheus/
+redis/
+web/

@@ -25,61 +25,73 @@ data:
 
     http {
       proxy_cache_path /data/nginx/cache levels=1:2 keys_zone=STATIC:10m inactive=24h  max_size=1g;
+      include /etc/nginx/mime.types;
+      default_type  application/octet-stream;
+
+      client_header_buffer_size   4k; 
+      client_max_body_size 10M;
+      client_body_buffer_size 2M; 
+
+      log_format  main  '$remote_addr $remote_user "$request" '
+                        '$status $body_bytes_sent "$http_referer" "$request_time" '
+                        '"$http_user_agent" ';
 
       gzip  on;    
       gzip_proxied any;
 
-      map $sent_http_content_type $expires {
-        default                    off;
-        ~image/                    6M;
-      } 
-
       server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
-        location / {
-          proxy_pass http://{{ $Name }}-web-service:{{ $WebServicePort }};
-          proxy_set_header Upgrade $http_upgrade;
-          proxy_set_header Connection "upgrade";
-          proxy_set_header Host $host;
-          proxy_cache            STATIC;
-          proxy_cache_valid      200  1d;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
-        }
+        listen 443 ssl;
+        server_name ancean.stag;
+
+        ssl_certificate /etc/cert/ssl.pem;
+        ssl_certificate_key /etc/cert/ssl-key.pem;
+
+        # location / {
+        #   proxy_pass http://{{ $Name }}-web-service:{{ $WebServicePort }};;
+        #   proxy_set_header Upgrade $http_upgrade;
+        #   proxy_set_header Connection "upgrade";
+        #   proxy_set_header Host $host;
+        #   proxy_cache            STATIC;
+        #   proxy_cache_valid      200  1d;
+        #   proxy_set_header X-Real-IP $remote_addr;
+        #   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        #   proxy_set_header X-Forwarded-Proto $scheme;
+        # }
         location /api/ {
           proxy_pass http://{{ $Name }}-api-service:{{ $APIServicePort }};
           proxy_set_header Host $host;
           proxy_cache            STATIC;
           proxy_cache_valid      200  1d;
           proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
         }
         location /admin/ {
           proxy_pass http://{{ $Name }}-api-service:{{ $APIServicePort }};
           proxy_set_header Host $host;
-          proxy_cache            STATIC;
-          proxy_cache_valid      200  1d;
           proxy_set_header X-Real-IP $remote_addr;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_set_header X-Forwarded-Proto $scheme;
         }
+        location /static/ {
+          alias /app/usr/static/;
+        }
         location /media/ {
-          proxy_pass http://{{ $Name }}-api-service:{{ $APIServicePort }};
-          proxy_set_header Host $host;
-          proxy_cache            STATIC;
-          proxy_cache_valid      200  1d;
-          proxy_set_header X-Real-IP $remote_addr;
-          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header X-Forwarded-Proto $scheme;
+          alias /app/usr/media/;
         }
         {{- with .exporter }}
         location /stub_status {
-            stub_status;
+          stub_status;
         }
         {{- end }}
       }
-    }
+      server {
+        listen 80;
+        server_name ancean.stag;
+
+        location / {
+          return 301 https://$host$request_uri;
+        }
+        location /.well-known/acme-challenge/ {
+          root /var/www/certbot;
+        }
+      }
 {{- end }}

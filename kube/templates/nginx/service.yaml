@@ -11,8 +11,13 @@ metadata:
     ancean: {{ $Env }}
 spec:
   ports:
-    - port: {{ .service.servicePort }}
-      targetPort: {{ .service.targetPort }}
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: https
+      protocol: 443
+      targetPort: 443
   selector:
     app: {{ $Name }}-nginx
   type: {{ .service.serviceType }}

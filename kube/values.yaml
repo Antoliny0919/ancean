@@ -12,7 +12,7 @@ resourceQuota:
 
 api:
   deploy:
-    image: antoliny0919/ancean-back-stag:1.0.6
+    image: antoliny0919/ancean-back-stag:1.0.7
   rolloutSpead:
     minReadySeconds: 60
     progressDeadlineSeconds: 180
@@ -32,7 +32,7 @@ web:
 
 postgres:
   pv:
-    storage: 2Gi
+    storage: 8Gi
   service:
     servicePort: 5432
     targetPort: 5432
@@ -43,8 +43,6 @@ postgres:
 
 nginx:
   service:
-    servicePort: 80
-    targetPort: 80
     serviceType: LoadBalancer
 
 redis:
