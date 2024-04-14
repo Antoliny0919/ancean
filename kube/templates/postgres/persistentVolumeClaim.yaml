@@ -11,5 +11,5 @@ spec:
   resources:
     requests:
       storage: {{ .Values.postgres.pv.storage }}
-  storageClassName: ""
+  storageClassName: "hostpath"
   

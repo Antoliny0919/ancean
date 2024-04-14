@@ -29,4 +29,4 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}-web-container
-          image: antoliny0919/ancean-front-stag:1.0.2
+          image: {{ .Values.web.deploy.image }}

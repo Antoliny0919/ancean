@@ -43,7 +43,7 @@ spec:
               mountPath: "/secrets"
             - name: data
               mountPath: /var/lib/postgresql/data
-              subPath: data/
+              subPath: volumes/postgres/data/
         {{- with .Values.postgres.exporter }}
         - name: {{ $Name }}-postgres-exporter
           image: wrouesnel/postgres_exporter:v0.8.0
@@ -72,3 +72,7 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-postgres-pvc
+        # - name: create-data
+        #   hostPath:
+        #     path: /volumes/postgres/data
+        #     type: DirectoryOrCreate

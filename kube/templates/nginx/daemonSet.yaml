@@ -51,8 +51,8 @@ spec:
               readOnly: true
             - name: cert
               mountPath: /etc/cert/
-            - name: cache-volume
-              mountPath: /data/nginx/cache
+            - name: media-static
+              mountPath: /app/usr/
         # {{- with .exporter }}
         # - name: {{ $Env }}-nginx-exporter
         #   image: nginx/nginx-prometheus-exporter:1.0.0
@@ -66,18 +66,11 @@ spec:
         - name: config
           configMap:
             name: {{ $Name }}-nginx-config
-        - name: cache-volume
-          hostPath:
-            path: /volumes/nginx-cache
-            type: DirectoryOrCreate
+        # - name: cache-volume
+        #   hostPath:
+        #     path: /volumes/nginx-cache
+        #     type: DirectoryOrCreate
         - name: cert
           secret:
             secretName: {{ $Name }}-nginx-secret
-            defaultMode: 0400
-            items:
-              key: SSL_KEY_PEM
-              path: ssl_key.pem
-            items:
-              key: SSL_PEM
-              path: ssl.pem
 {{- end }}

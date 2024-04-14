@@ -23,8 +23,6 @@
 .vscode/
 
 grafana/
-ingress/
 kube/
 prometheus/
 redis/
-web/

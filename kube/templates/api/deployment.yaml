@@ -35,10 +35,10 @@ spec:
               mountPath: /usr/app/ancean/secrets
             - name: media
               mountPath: /usr/app/ancean/media
-              subPath: media/
+              subPath: volumes/api/media/
             - name: media
               mountPath: /usr/app/ancean/static
-              subPath: static/
+              subPath: volumes/api/static/
           ports:
             - containerPort: 8000
               name: http

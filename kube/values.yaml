@@ -22,6 +22,8 @@ api:
     serviceType: ClusterIP
 
 web:
+  deploy:
+    image: antoliny0919/ancean-front-stag:1.0.42
   rolloutSpead:
     minReadySeconds: 60
     progressDeadlineSeconds: 180

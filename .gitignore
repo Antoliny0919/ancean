@@ -15,3 +15,4 @@ config/dev/nginx/cache/
 config/dev/data/
 .vagrant
 cert/
+x509/
