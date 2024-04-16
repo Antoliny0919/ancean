@@ -44,3 +44,5 @@ rm -rf get_helm.sh
 wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.29.0/crictl-v1.29.0-linux-arm64.tar.gz
 
 sudo tar -xvf ./crictl-v1.29.0-linux-arm64.tar.gz -C /usr/local/bin
+
+rm -rf crictl-v1.29.0-linux-arm64.tar.gz

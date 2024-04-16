@@ -4,7 +4,7 @@ sudo apt-get -y install nfs-kernel-server
 
 sudo mkdir -p /srv/nfs4/ancean
 
-sudo echo "/srv/nfs4/ancean 192.168.1.101(rw,sync,no_subtree_check)" >> /etc/exports
+sudo echo "/srv/nfs4/ancean 192.168.1.0/24(rw,sync,no_subtree_check)" >> /etc/exports
 
 sudo exportfs -ar
 

@@ -44,23 +44,23 @@ spec:
             # - name: data
             #   mountPath: /var/lib/postgresql/data
             #   subPath: volumes/postgres/data/
-        {{- with .Values.postgres.exporter }}
-        - name: {{ $Name }}-postgres-exporter
-          image: wrouesnel/postgres_exporter:v0.8.0
-          ports:
-            - name: metrics
-              containerPort: {{ .port }}
-          env:
-            - name: DATA_SOURCE_URI
-              value: localhost/postgres?sslmode=disable
-            - name: DATA_SOURCE_USER
-              value: {{ .user | quote }}
-            - name: DATA_SOURCE_PASS
-              valueFrom:
-                secretKeyRef:
-                  key: POSTGRES_PASSWORD
-                  name: {{ $Name }}-postgres-secret
-        {{- end }}
+        # {{- with .Values.postgres.exporter }}
+        # - name: {{ $Name }}-postgres-exporter
+        #   image: wrouesnel/postgres_exporter:v0.8.0
+        #   ports:
+        #     - name: metrics
+        #       containerPort: {{ .port }}
+        #   env:
+        #     - name: DATA_SOURCE_URI
+        #       value: localhost/postgres?sslmode=disable
+        #     - name: DATA_SOURCE_USER
+        #       value: {{ .user | quote }}
+        #     - name: DATA_SOURCE_PASS
+        #       valueFrom:
+        #         secretKeyRef:
+        #           key: POSTGRES_PASSWORD
+        #           name: {{ $Name }}-postgres-secret
+        # {{- end }}
       volumes:
         - name: secret
           secret:
