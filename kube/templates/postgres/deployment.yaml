@@ -41,9 +41,9 @@ spec:
           volumeMounts:
             - name: secret
               mountPath: "/secrets"
-            - name: data
-              mountPath: /var/lib/postgresql/data
-              subPath: volumes/postgres/data/
+            # - name: data
+            #   mountPath: /var/lib/postgresql/data
+            #   subPath: volumes/postgres/data/
         {{- with .Values.postgres.exporter }}
         - name: {{ $Name }}-postgres-exporter
           image: wrouesnel/postgres_exporter:v0.8.0
@@ -69,9 +69,9 @@ spec:
             items:
               - key: POSTGRES_PASSWORD
                 path: postgres_password
-        - name: data
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-postgres-pvc
+        # - name: data
+        #   persistentVolumeClaim:
+        #     claimName: {{ .Release.Name }}-postgres-pvc
         # - name: create-data
         #   hostPath:
         #     path: /volumes/postgres/data
