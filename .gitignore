@@ -7,7 +7,7 @@ ancean-front/
 jenkins/
 secrets/
 
-secrets.yaml
+secret.yaml
 
 .DS_Store
 .env

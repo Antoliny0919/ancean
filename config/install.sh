@@ -28,3 +28,19 @@ sudo apt -y install kubeadm kubelet kubectl
 
 sudo apt-mark hold kubeadm kubelet kubectl
 
+#install helm
+
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+
+chmod 700 get_helm.sh
+
+./get_helm.sh
+
+rm -rf get_helm.sh
+
+
+#install crictl
+
+wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.29.0/crictl-v1.29.0-linux-arm64.tar.gz
+
+sudo tar -xvf ./crictl-v1.29.0-linux-arm64.tar.gz -C /usr/local/bin

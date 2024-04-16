@@ -9,11 +9,11 @@ sudo echo "/srv/nfs4/ancean 192.168.1.101(rw,sync,no_subtree_check)" >> /etc/exp
 sudo exportfs -ar
 
 # kubernetes config
-sudo swapoff -a
+sudo swapoff -a 
 
-sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+sudo sed -i '/swap/s/^/#/' /etc/fstab
 
-sudo echo -e "overlay\nbr_netfilter" | sudo tee /etc/modules-load.d/containerd.conf
+sudo echo -e "overlay\nbr_netfilter" | sudo tee /etc/modules-load.d/kubernetes.conf
 
 sudo modprobe overlay
 
