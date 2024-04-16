@@ -66,5 +66,6 @@ spec:
               path: {{.}}-secrets.json
             {{- end }}
       - name: nfs-vol
-        persistentVolumeClaim: 
-          claimName: {{ .Release.Name }}-api-pvc
+        nfs:
+          server: 192.168.1.10
+          path: /srv/nfs4/ancean
