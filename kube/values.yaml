@@ -6,6 +6,10 @@ env: stag
 version: v1
 namespace: ancean-stag
 
+nfs:
+  server: 192.168.1.10
+  path: /srv/nfs4/ancean
+
 resourceQuota:
   cpu: 1000
   memory: 1Gi

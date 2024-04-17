@@ -41,9 +41,9 @@ spec:
           volumeMounts:
             - name: secret
               mountPath: "/secrets"
-            # - name: data
-            #   mountPath: /var/lib/postgresql/data
-            #   subPath: volumes/postgres/data/
+            - name: nfs-volume
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres/data/
         # {{- with .Values.postgres.exporter }}
         # - name: {{ $Name }}-postgres-exporter
         #   image: wrouesnel/postgres_exporter:v0.8.0
@@ -69,6 +69,10 @@ spec:
             items:
               - key: POSTGRES_PASSWORD
                 path: postgres_password
+        - name: nfs-volume
+          nfs:
+            server: {{ .Values.nfs.server }}
+            path: {{ .Values.nfs.path }}
         # - name: data
         #   persistentVolumeClaim:
         #     claimName: {{ .Release.Name }}-postgres-pvc
