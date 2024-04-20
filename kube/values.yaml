@@ -37,8 +37,6 @@ web:
     serviceType: LoadBalancer
 
 postgres:
-  pv:
-    storage: 8Gi
   service:
     servicePort: 5432
     targetPort: 5432
@@ -46,6 +44,8 @@ postgres:
   exporter:
     port: 9187
     user: ancean
+  pv:
+    storage: 1Gi
 
 nginx:
   service:

@@ -51,8 +51,8 @@ spec:
               readOnly: true
             - name: cert
               mountPath: /etc/cert/
-            - name: media-static
-              mountPath: /app/usr/
+            # - name: media-static
+            #   mountPath: /app/usr/
         # {{- with .exporter }}
         # - name: {{ $Env }}-nginx-exporter
         #   image: nginx/nginx-prometheus-exporter:1.0.0

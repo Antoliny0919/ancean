@@ -22,19 +22,7 @@ spec:
       containers:
         - name: {{ $Name }}-postgres-container
           image: postgres:15.3
-          env:
-            - name: POSTGRES_DB
-              value: "postgres"
-            - name: POSTGRES_USER
-              value: "ancean"
-            - name: POSTGRES_PASSWORD_FILE
-              value: /secrets/postgres_password
-          volumeMounts:
-            - name: secret
-              mountPath: /secret
-            - name: nfs-volume
-              mountPath: /backup
-              subPath: postgres/backup/
+          {{- if eq .Values.env "stag" }}
           readinessProbe:
             tcpSocket:
               port: 5432
@@ -44,32 +32,46 @@ spec:
               command: ["pg_isready", "-h", "localhost"]
             periodSeconds: 10
             initialDelaySeconds: 10
-        # {{- with .Values.postgres.exporter }}
-        # - name: {{ $Name }}-postgres-exporter
-        #   image: wrouesnel/postgres_exporter:v0.8.0
-        #   ports:
-        #     - name: metrics
-        #       containerPort: {{ .port }}
-        #   env:
-        #     - name: DATA_SOURCE_URI
-        #       value: localhost/postgres?sslmode=disable
-        #     - name: DATA_SOURCE_USER
-        #       value: {{ .user | quote }}
-        #     - name: DATA_SOURCE_PASS
-        #       valueFrom:
-        #         secretKeyRef:
-        #           key: POSTGRES_PASSWORD
-        #           name: {{ $Name }}-postgres-secret
-        # {{- end }}
+          {{- end }}
+          env:
+            - name: POSTGRES_DB
+              value: "postgres"
+            - name: POSTGRES_USER
+              value: "ancean"
+            - name: POSTGRES_PASSWORD_FILE
+              value: /secrets/postgres_password
+          volumeMounts:
+            - name: secret
+              mountPath: "/secrets"
+            # - name: nfs-volume
+            #   mountPath: /backup
+            #   subPath: postgres/backup/
+        {{- with .Values.postgres.exporter }}
+        - name: {{ $Name }}-postgres-exporter
+          image: quay.io/prometheuscommunity/postgres-exporter:v0.14.0
+          ports:
+            - name: metrics
+              containerPort: {{ .port }}
+          env:
+            - name: DATA_SOURCE_URI
+              value: localhost/postgres?sslmode=disable
+            - name: DATA_SOURCE_USER
+              value: {{ .user | quote }}
+            - name: DATA_SOURCE_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: {{ $Name }}-postgres-secret
+        {{- end }}
       volumes:
-      - name: secret
-        secret:
-          secretName: {{ .Release.Name }}-postgres-secret
-          defaultMode: 0400
-          items:
-            - key: POSTGRES_PASSWORD
-              path: postgres_password
-      - name: nfs-volume
-        nfs:
-          server: {{ .Values.nfs.server }}
-          path: {{ .Values.nfs.path }}
+        - name: secret
+          secret:
+            secretName: {{ .Release.Name }}-postgres-secret
+            defaultMode: 0400
+            items:
+              - key: POSTGRES_PASSWORD
+                path: postgres_password
+        # - name: nfs-volume
+        #   nfs:
+        #     server: {{ .Values.nfs.server }}
+        #     path: {{ .Values.nfs.path }}
