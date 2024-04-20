@@ -22,15 +22,6 @@ spec:
       containers:
         - name: {{ $Name }}-postgres-container
           image: postgres:15.3
-          readinessProbe:
-            tcpSocket:
-              port: 5432
-            periodSeconds: 5
-          livenessProbe:
-            exec:
-              command: ["pg_isready", "-h", "localhost"]
-            periodSeconds: 10
-            initialDelaySeconds: 10
           env:
             - name: POSTGRES_DB
               value: "postgres"
@@ -40,10 +31,19 @@ spec:
               value: /secrets/postgres_password
           volumeMounts:
             - name: secret
-              mountPath: "/secrets"
+              mountPath: /secret
             - name: nfs-volume
-              mountPath: /var/lib/postgresql/data
-              subPath: postgres/data/
+              mountPath: /backup
+              subPath: postgres/backup/
+          readinessProbe:
+            tcpSocket:
+              port: 5432
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-h", "localhost"]
+            periodSeconds: 10
+            initialDelaySeconds: 10
         # {{- with .Values.postgres.exporter }}
         # - name: {{ $Name }}-postgres-exporter
         #   image: wrouesnel/postgres_exporter:v0.8.0
@@ -62,21 +62,14 @@ spec:
         #           name: {{ $Name }}-postgres-secret
         # {{- end }}
       volumes:
-        - name: secret
-          secret:
-            secretName: {{ .Release.Name }}-postgres-secret
-            defaultMode: 0400
-            items:
-              - key: POSTGRES_PASSWORD
-                path: postgres_password
-        - name: nfs-volume
-          nfs:
-            server: {{ .Values.nfs.server }}
-            path: {{ .Values.nfs.path }}
-        # - name: data
-        #   persistentVolumeClaim:
-        #     claimName: {{ .Release.Name }}-postgres-pvc
-        # - name: create-data
-        #   hostPath:
-        #     path: /volumes/postgres/data
-        #     type: DirectoryOrCreate
+      - name: secret
+        secret:
+          secretName: {{ .Release.Name }}-postgres-secret
+          defaultMode: 0400
+          items:
+            - key: POSTGRES_PASSWORD
+              path: postgres_password
+      - name: nfs-volume
+        nfs:
+          server: {{ .Values.nfs.server }}
+          path: {{ .Values.nfs.path }}
