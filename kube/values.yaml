@@ -50,6 +50,8 @@ postgres:
 nginx:
   service:
     serviceType: LoadBalancer
+  exporter:
+    port: 9113
 
 redis:
   service:

@@ -33,12 +33,12 @@ spec:
           volumeMounts:
             - name: secret
               mountPath: /usr/app/ancean/secrets
-            # - name: nfs-volume
-            #   mountPath: /usr/app/ancean/media
-            #   subPath: api/media/
-            # - name: nfs-volume
-            #   mountPath: /usr/app/ancean/static
-            #   subPath: api/static/
+            - name: nfs-volume
+              mountPath: /usr/app/ancean/media
+              subPath: api/media/
+            - name: nfs-volume
+              mountPath: /usr/app/ancean/static
+              subPath: api/static/
           ports:
             - containerPort: 8000
               name: http
@@ -65,7 +65,7 @@ spec:
             - key: {{.}}-secrets.json
               path: {{.}}-secrets.json
             {{- end }}
-      # - name: nfs-volume
-      #   nfs:
-      #     server: {{ .Values.nfs.server }}
-      #     path: {{ .Values.nfs.path }}
+      - name: nfs-volume
+        nfs:
+          server: {{ .Values.nfs.server }}
+          path: {{ .Values.nfs.path }}

@@ -1,42 +1,36 @@
-{{ $Env := .Values.env }}
-{{ $Ver := .Values.version }}
 {{ $Name := .Release.Name }}
-{{ $Namespace := .Values.namespace }}
-{{- with .Values.nginx }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ $Name }}-nginx-daemonset
-  namespace: {{ $Namespace }}
+  name: {{ .Release.Name }}-nginx-daemonset
+  namespace: {{ .Values.namespace }}
   labels: 
-    ancean: {{ $Env }}
+    ancean: {{ .Values.env }}
 spec:
   selector:
     matchLabels:
-      app: {{ $Name }}-nginx
-  # {{- with .rolloutSpead }}
-  # minReadySeconds: {{ .minReadySeconds }}
-  # progressDeadlineSeconds: {{ .progressDeadlineSeconds }}
-  # {{- end }}
-  # {{- if eq $Env "stag" }}
-  # updateStrategy:
-  #   type: RollingUpdate
-  #   rollingUpdate:
-  #     maxUnavailable: 1
-  #     maxSurge: 0
-  # {{- end }}
+      app: {{ .Release.Name }}-nginx
+  {{- with .rolloutSpead }}
+  minReadySeconds: {{ .minReadySeconds }}
+  progressDeadlineSeconds: {{ .progressDeadlineSeconds }}
+  {{- end }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
   template:
     metadata:
       labels:
-        app: {{ $Name }}-nginx
-        version: {{ $Ver }}
-      # {{- with .exporter }}
-      # annotations:
-      #   prometheus.io/port: {{ .port | quote }}
-      # {{- end }}
+        app: {{ .Release.Name }}-nginx
+        version: {{ .Values.version }}
+      {{- with .Values.nginx.exporter }}
+      annotations:
+        prometheus.io/port: {{ .port | quote }}
+      {{- end }}
     spec:
       containers:
-        - name: {{ $Name }}-nginx-container
+        - name: {{ .Release.Name }}-nginx-container
           image: nginx:1.24.0
           ports:
             - containerPort: 80
@@ -51,26 +45,32 @@ spec:
               readOnly: true
             - name: cert
               mountPath: /etc/cert/
-            # - name: media-static
-            #   mountPath: /app/usr/
-        # {{- with .exporter }}
-        # - name: {{ $Env }}-nginx-exporter
-        #   image: nginx/nginx-prometheus-exporter:1.0.0
-        #   ports:
-        #     - name: metrics
-        #       containerPort: {{ .port }}
-        #   args:
-        #     - -nginx.scrape-uri=http://localhost/stub_status
-        # {{ end }}
+            - name: nfs-volume
+              mountPath: /app/usr
+              subPath: api/
+            - name: cache-volume
+              mountPath: /data/nginx/cache
+        {{- with .Values.nginx.exporter }}
+        - name: {{ $Name }}-nginx-exporter
+          image: nginx/nginx-prometheus-exporter:1.0.0
+          ports:
+            - name: metrics
+              containerPort: {{ .port }}
+          args:
+            - -nginx.scrape-uri=http://localhost/stub_status
+        {{ end }}
       volumes:
         - name: config
           configMap:
-            name: {{ $Name }}-nginx-config
-        # - name: cache-volume
-        #   hostPath:
-        #     path: /volumes/nginx-cache
-        #     type: DirectoryOrCreate
+            name: {{ .Release.Name }}-nginx-config
         - name: cert
           secret:
-            secretName: {{ $Name }}-nginx-secret
-{{- end }}
+            secretName: {{ .Release.Name }}-nginx-secret
+        - name: nfs-volume
+          nfs:
+            server: {{ .Values.nfs.server }}
+            path: {{ .Values.nfs.path }}
+        - name: cache-volume
+          hostPath:
+            path: /volumes/nginx-cache
+            type: DirectoryOrCreate

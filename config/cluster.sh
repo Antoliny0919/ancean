@@ -2,7 +2,7 @@ sudo echo "KUBELET_EXTRA_ARGS=\"--cgroup-driver=cgroupfs\"" | sudo tee /etc/defa
 
 sudo systemctl daemon-reload && sudo systemctl restart kubelet
 
-sudo kubeadm init --pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.1.10
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=192.168.1.10
 
 sudo mkdir -p $HOME/.kube
 

@@ -58,3 +58,11 @@ wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.29.0/cric
 sudo tar -xvf ./crictl-v1.29.0-linux-arm64.tar.gz -C /usr/local/bin
 
 rm -rf crictl-v1.29.0-linux-arm64.tar.gz
+
+#install openssl
+
+wget https://www.openssl.org/source/openssl-3.3.0.tar.gz
+
+sudo tar -xvf openssl-3.3.0.tar.gz -C /usr/local/bin
+
+rm -rf openssl-3.3.0.tar.gz

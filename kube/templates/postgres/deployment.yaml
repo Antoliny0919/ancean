@@ -43,9 +43,9 @@ spec:
           volumeMounts:
             - name: secret
               mountPath: "/secrets"
-            # - name: nfs-volume
-            #   mountPath: /backup
-            #   subPath: postgres/backup/
+            - name: nfs-volume
+              mountPath: /backup
+              subPath: postgres/backup/
         {{- with .Values.postgres.exporter }}
         - name: {{ $Name }}-postgres-exporter
           image: quay.io/prometheuscommunity/postgres-exporter:v0.14.0
@@ -71,7 +71,7 @@ spec:
             items:
               - key: POSTGRES_PASSWORD
                 path: postgres_password
-        # - name: nfs-volume
-        #   nfs:
-        #     server: {{ .Values.nfs.server }}
-        #     path: {{ .Values.nfs.path }}
+        - name: nfs-volume
+          nfs:
+            server: {{ .Values.nfs.server }}
+            path: {{ .Values.nfs.path }}
