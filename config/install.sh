@@ -2,7 +2,6 @@ for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker c
 
 # install containerd.io
 
-sudo apt-get update
 # sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 
 # wget https://github.com/containerd/containerd/releases/download/v1.7.14/containerd-1.7.14-linux-arm64.tar.gz
@@ -28,8 +27,6 @@ sudo apt-get update
 sudo apt-get install containerd.io
 
 #install kubernetes
-
-sudo mkdir -p /etc/apt/keyrings
 
 sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.24/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 

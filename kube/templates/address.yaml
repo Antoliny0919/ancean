@@ -1,19 +1,12 @@
-apiVersion: metallb.io/v1beta1
-kind: IPAddressPool
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: ip-pool
   namespace: metallb-system
-spec:
-  addresses:
-  - 192.168.1.100-192.168.1.200
-
----
-
-apiVersion: metallb.io/v1beta1
-kind: L2Advertisement
-metadata:
-  name: my-network-l2
-  namespace: metallb-system
-spec:
-  ipAddressPools:
-  - ip-pool
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: nginx-ip-range
+      protocol: layer2
+      addresses:
+      - 192.168.1.100-192.168.1.200
