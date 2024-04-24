@@ -22,9 +22,9 @@
 *.tmproj
 .vscode/
 
+nginx/
 api/
 web/
-postgres/
 redis/
 kube/
 grafana/

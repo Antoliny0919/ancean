@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  api:
+    image: antoliny0919/ancean-back-stag:latest
+    deploy:
+      replicas: 2
+    secrets:
+      - source: api-secrets
+        target: /usr/app/ancean/secrets
+    ports:
+      - 4040:8000
+    network:
+      - ancean-stag-net
+
+  postgres:
+    image: postgres:14
+    deploy:
+      replicas: 2
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: ancean
+      POSTGRES_PASSWORD_FILE: /secrets/postgres_password
+    secrets:
+      - source: postgres-secrets
+        target: /secrets
+    ports:
+      - 5432:5432
+    network:
+      - ancean-stag-net
+
+secrets:
+  api-secrets:
+    external: true
+  postgres-secrets:
+    extrenal: true
+
+network:
+  ancean-stag:

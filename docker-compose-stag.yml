@@ -28,9 +28,9 @@ services:
     volumes:
       - ./ancean-back/ancean/media:/usr/app/ancean/media
     secrets:
-      - source: postgres-connection
+      - source: postgres-secrets
         target: /usr/app/ancean/secrets/postgres-secrets.json
-      - source: django-connection
+      - source: django-secrets
         target: /usr/app/ancean/secrets/django-secrets.json
       - source: oauth-connection
         target: /usr/app/ancean/secrets/oauth-secrets.json
@@ -72,9 +72,9 @@ services:
       - default-bridge
 
 secrets:
-  postgres-connection:
+  postgres-secrets:
     file: ./secrets/postgres-secrets.json
-  django-connection:
+  django-secrets:
     file: ./secrets/django-secrets.json
   oauth-connection:
     file: ./secrets/oauth-secrets.json

@@ -1,17 +1,5 @@
 for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
 
-# install containerd.io
-
-# sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-
-# wget https://github.com/containerd/containerd/releases/download/v1.7.14/containerd-1.7.14-linux-arm64.tar.gz
-
-# sudo tar -xvf ./containerd-1.7.14-linux-arm64.tar.gz -C /usr
-
-# rm -rf containerd-1.7.14-linux-arm64.tar.gz
-
-# sudo apt -y install docker.io 
-
 sudo apt-get update
 sudo apt-get install ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
@@ -24,7 +12,7 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
 
-sudo apt-get install containerd.io
+sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 #install kubernetes
 
