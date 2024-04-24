@@ -5,17 +5,13 @@ services:
   api:
     build:  
       context: ./ancean-back
-      dockerfile: Dockerfile.local
+      dockerfile: Dockerfile.prod
     container_name: api-local
-    volumes:
-      - ./ancean-back:/usr/app
+    # volumes:
+    #   - ./ancean-back:/usr/app
     secrets:
-      - source: postgres-connection
-        target: /usr/app/ancean/secrets/postgres-secrets.json
       - source: django-connection
         target: /usr/app/ancean/secrets/django-secrets.json
-      - source: oauth-connection
-        target: /usr/app/ancean/secrets/oauth-secrets.json
     ports:
       - "5050:8000"
     networks:
@@ -40,12 +36,8 @@ services:
       - default-bridge
 
 secrets:
-  postgres-connection:
-    file: ./secrets/postgres-secrets.json
   django-connection:
     file: ./secrets/django-secrets.json
-  oauth-connection:
-    file: ./secrets/oauth-secrets.json
 
 networks:
   default-bridge:

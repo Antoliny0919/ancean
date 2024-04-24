@@ -7,10 +7,10 @@ services:
       replicas: 2
     secrets:
       - source: api-secrets
-        target: /usr/app/ancean/secrets
+        target: /usr/app/ancean/secrets/django-secrets.json
     ports:
-      - 4040:8000
-    network:
+      - 6060:8000
+    networks:
       - ancean-stag-net
 
   postgres:
@@ -20,20 +20,20 @@ services:
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: ancean
-      POSTGRES_PASSWORD_FILE: /secrets/postgres_password
+      POSTGRES_PASSWORD_FILE: /secrets/postgres-password
     secrets:
       - source: postgres-secrets
-        target: /secrets
+        target: /secrets/postgres-password
     ports:
       - 5432:5432
-    network:
+    networks:
       - ancean-stag-net
 
 secrets:
   api-secrets:
-    external: true
+    file: ./secrets/django-secrets.json
   postgres-secrets:
-    extrenal: true
+    file: ./secrets/postgres-password.txt
 
-network:
-  ancean-stag:
+networks:
+  ancean-stag-net:

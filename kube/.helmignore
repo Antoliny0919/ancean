@@ -23,7 +23,6 @@
 .vscode/
 
 nginx/
-api/
 web/
 redis/
 kube/

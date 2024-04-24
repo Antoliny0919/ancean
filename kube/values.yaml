@@ -16,7 +16,7 @@ resourceQuota:
 
 api:
   deploy:
-    image: antoliny0919/ancean-back-stag:1.0.7
+    image: antoliny0919/ancean-back-stag:1.0.11
   rolloutSpead:
     minReadySeconds: 60
     progressDeadlineSeconds: 180
