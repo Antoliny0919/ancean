@@ -5,10 +5,10 @@ services:
   api:
     build:  
       context: ./ancean-back
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.local
     container_name: api-local
-    # volumes:
-    #   - ./ancean-back:/usr/app
+    volumes:
+      - ./ancean-back:/usr/app
     secrets:
       - source: django-connection
         target: /usr/app/ancean/secrets/django-secrets.json

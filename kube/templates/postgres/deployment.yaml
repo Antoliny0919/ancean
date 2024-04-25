@@ -43,26 +43,26 @@ spec:
           volumeMounts:
             - name: secret
               mountPath: "/secrets"
-            # - name: nfs-volume
-            #   mountPath: /backup
-            #   subPath: postgres/backup/
-        # {{- with .Values.postgres.exporter }}
-        # - name: {{ $Name }}-postgres-exporter
-        #   image: quay.io/prometheuscommunity/postgres-exporter:v0.14.0
-        #   ports:
-        #     - name: metrics
-        #       containerPort: {{ .port }}
-        #   env:
-        #     - name: DATA_SOURCE_URI
-        #       value: localhost/postgres?sslmode=disable
-        #     - name: DATA_SOURCE_USER
-        #       value: {{ .user | quote }}
-        #     - name: DATA_SOURCE_PASS
-        #       valueFrom:
-        #         secretKeyRef:
-        #           key: POSTGRES_PASSWORD
-        #           name: {{ $Name }}-postgres-secret
-        # {{- end }}
+            - name: nfs-volume
+              mountPath: /backup
+              subPath: postgres/backup/
+        {{- with .Values.postgres.exporter }}
+        - name: {{ $Name }}-postgres-exporter
+          image: quay.io/prometheuscommunity/postgres-exporter:v0.14.0
+          ports:
+            - name: metrics
+              containerPort: {{ .port }}
+          env:
+            - name: DATA_SOURCE_URI
+              value: localhost/postgres?sslmode=disable
+            - name: DATA_SOURCE_USER
+              value: {{ .user | quote }}
+            - name: DATA_SOURCE_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: {{ $Name }}-postgres-secret
+        {{- end }}
       volumes:
         - name: secret
           secret:
@@ -71,7 +71,7 @@ spec:
             items:
               - key: POSTGRES_PASSWORD
                 path: postgres_password
-        # - name: nfs-volume
-        #   nfs:
-        #     server: {{ .Values.nfs.server }}
-        #     path: {{ .Values.nfs.path }}
+        - name: nfs-volume
+          nfs:
+            server: {{ .Values.nfs.server }}
+            path: {{ .Values.nfs.path }}

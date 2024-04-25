@@ -33,43 +33,37 @@ spec:
           volumeMounts:
             - name: secret
               mountPath: /usr/app/ancean/secrets
-            # - name: nfs-volume
-            #   mountPath: /usr/app/ancean/media
-            #   subPath: api/media/
-            # - name: nfs-volume
-            #   mountPath: /usr/app/ancean/static
-            #   subPath: api/static/
+            - name: nfs-volume
+              mountPath: /usr/app/ancean/media
+              subPath: api/media/
+            - name: nfs-volume
+              mountPath: /usr/app/ancean/static
+              subPath: api/static/
           ports:
             - containerPort: 8000
               name: http
-          # {{- if eq .Values.env "stag" }}
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          #   periodSeconds: 30
-          #   initialDelaySeconds: 20
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          #   periodSeconds: 30
-          #   initialDelaySeconds: 20
-          # {{- end }}
+          {{- if eq .Values.env "stag" }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            initialDelaySeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            initialDelaySeconds: 20
+          {{- end }}
       volumes:
       - name: secret
         secret:
           secretName: {{ .Release.Name }}-api-secret
           items:
-            # {{- range tuple "django" "postgres" "oauth" }}
-            # - key: {{.}}-secrets.json
-            #   path: {{.}}-secrets.json
-            # {{- end }}
-            {{- range tuple "django" }}
-            - key: {{.}}-secrets.json
-              path: {{.}}-secrets.json
-            {{- end }}
-      # - name: nfs-volume
-      #   nfs:
-      #     server: {{ .Values.nfs.server }}
-      #     path: {{ .Values.nfs.path }}
+            - key: django-secrets.json
+              path: django-secrets.json
+      - name: nfs-volume
+        nfs:
+          server: {{ .Values.nfs.server }}
+          path: {{ .Values.nfs.path }}
