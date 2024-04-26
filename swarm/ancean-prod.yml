@@ -1,0 +1,101 @@
+version: "3.7"
+
+services:
+
+  nginx:
+    image: nginx:1.24.0
+    deploy:
+      mode: global
+    configs:
+      - source: nginx-conf
+        target: /etc/nginx/nginx.conf
+    volumes:
+      - api-static:/app/usr/static
+      - api-media:/app/usr/media
+      - nginx-cache:/data/nginx/cache
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - api
+      - web
+    networks:
+      - ancean-net
+
+  web:
+    image: antoliny0919/ancean-front-stag:1.0.42
+    deploy:
+      replicas: 5
+    depends_on:
+      - api
+    networks:
+      - ancean-net
+
+  api:
+    image: antoliny0919/ancean-back-stag:1.0.17
+    deploy:
+      replicas: 2
+    secrets:
+      - source: api-secrets
+        target: /usr/app/ancean/secrets/django-secrets.json
+    volumes:
+      - api-media:/usr/app/ancean/media      
+      - api-static:/usr/app/ancean/static
+    depends_on:
+      - postgres
+    networks:
+      - ancean-net
+
+  postgres:
+    image: postgres:14
+    deploy:
+      replicas: 1
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: ancean
+      POSTGRES_PASSWORD_FILE: /secrets/postgres-password
+    secrets:
+      - source: postgres-secrets
+        target: /secrets/postgres-password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - ancean-net
+
+configs:
+  nginx-conf:
+    file: ./configs/nginx/nginx.conf
+
+secrets:
+  api-secrets:
+    file: ./secrets/django-secrets.json
+  postgres-secrets:
+    file: ./secrets/postgres-password.txt
+
+volumes:
+  postgres-data:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=172.31.18.234,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
+      device: "172.31.18.234:/efs/postgres"
+
+  api-media:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=172.31.18.234,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
+      device: "172.31.18.234:/efs/api/media"
+
+  api-static:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=172.31.18.234,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
+      device: "172.31.18.234:/efs/api/static"
+
+  nginx-cache:
+    
+
+networks:
+  ancean-net:
