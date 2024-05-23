@@ -1,6 +1,5 @@
 # only provide infrastructure related file
 
-flask/
 ancean-back/
 ancean-front/
 
@@ -11,8 +10,5 @@ secret.yaml
 
 .DS_Store
 .env
-config/dev/nginx/cache/
-config/dev/data/
 .vagrant
-cert/
-x509/
+stag-data/

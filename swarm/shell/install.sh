@@ -34,3 +34,5 @@ sudo ./aws/install
 
 rm -rf $(ls)
 
+
+
