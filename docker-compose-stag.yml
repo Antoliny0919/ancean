@@ -1,0 +1,86 @@
+version: '3.7'
+
+services:
+
+  nginx:
+    image: nginx:1.24.0
+    deploy:
+      mode: global
+    configs:
+      - source: nginx-conf
+        target: /etc/nginx/nginx.conf
+    volumes:
+      - $HOME/prod-data/media:/app/usr/media
+      - $HOME/prod-data/x509/nginx-tls.crt:/etc/cert/nginx-tls.crt
+      - $HOME/prod-data/x509/nginx-tls.key:/etc/cert/nginx-tls.key
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - api
+    networks:
+      - ancean-stag-net
+
+  api:
+    image: 192.168.1.10:5000/ancean-back-stag:v1.0.0
+    deploy:
+      replicas: 5
+    secrets:
+      - source: api-secrets
+        target: /usr/app/ancean/secrets/django-secrets.json
+    volumes:
+      - $HOME/prod-data/media:/usr/app/ancean/media
+      - $HOME/prod-data/static:/usr/app/ancean/static
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    networks:
+      - ancean-stag-net
+
+  postgres:
+    image: postgres:16.3
+    deploy:
+      mode: global
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: ancean
+      POSTGRES_PASSWORD_FILE: /secrets/postgres-password
+    volumes:
+      - $HOME/prod-data/backup:/backup
+        - type: volume
+        source: postgres-data
+        target: /var/lib/postgresql/data
+      # - $HOME/data:/var/lib/postgresql/data
+    secrets:
+      - source: postgres-secrets
+        target: /secrets/postgres-password
+    networks:
+      - ancean-stag-net
+
+  registry:
+    image: registry:2
+    volumes:
+      - ./stag-registry:/var/lib/registry
+    ports:
+      - 5000:5000
+
+configs:
+  nginx-conf:
+    file: ./swarm/configs/nginx/nginx-stag.conf
+
+secrets:
+  api-secrets:
+    file: ./swarm/secrets/django-secrets.json
+  postgres-secrets:
+    file: ./swarm/secrets/postgres-password.txt
+
+volumes:
+  postgres-data:
+    driver_opts:
+      type: nfs
+      o: addr=192.168.1.10,nolock,soft,rw
+      device: :/postgres/data 
+
+networks:
+  ancean-stag-net:
