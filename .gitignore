@@ -12,3 +12,4 @@ secret.yaml
 .env
 .vagrant
 stag-data/
+data/
