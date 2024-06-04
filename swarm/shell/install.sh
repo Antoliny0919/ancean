@@ -22,17 +22,20 @@ sudo curl -L "https://github.com/docker/compose/releases/download/v2.26.0/docker
 
 sudo chmod +x /usr/local/bin/docker-compose
 
-# install aws-cli
+# install aws-cli only prod env
 
-sudo apt-get install unzip
+# if [] ; then
+  # sudo apt-get install unzip
 
-curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+  # curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
 
-unzip awscliv2.zip
+  # unzip awscliv2.zip
 
-sudo ./aws/install
+  # sudo ./aws/install
 
-rm -rf $(ls)
+  # rm -rf $(ls)
+# fi
+
 
 
 

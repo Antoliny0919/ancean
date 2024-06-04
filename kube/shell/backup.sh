@@ -11,4 +11,4 @@ mariadb-dump --user=ancean --password=$(cat /secrets/mysql-password.txt) ancean 
 
 # restore
 
- mariadb --user=ancean --password=$(cat /secrets/mysql-password.txt) ancean < /backup/ancean-data.sql
+mariadb --user=ancean --password=$(cat /secrets/mysql-password.txt) ancean < /backup/ancean-data.sql

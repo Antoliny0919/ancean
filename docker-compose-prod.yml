@@ -12,7 +12,7 @@ services:
     volumes:
       - api-static:/app/usr/static
       - api-media:/app/usr/media
-      # - nginx-cache:/data/nginx/cache
+        # - nginx-cache:/data/nginx/cache
     ports:
       - 80:80
       - 443:443
@@ -25,7 +25,7 @@ services:
   web:
     image: 339713165736.dkr.ecr.ap-northeast-2.amazonaws.com/ancean-front-prod:latest
     deploy:
-      replicas: 5
+      replicas: 3
     depends_on:
       - api
     networks:
@@ -34,7 +34,7 @@ services:
   api:
     image: 339713165736.dkr.ecr.ap-northeast-2.amazonaws.com/ancean-back-prod:latest
     deploy:
-      replicas: 5
+      replicas: 3
     secrets:
       - source: api-secrets
         target: /usr/app/ancean/secrets/django-secrets.json
@@ -42,7 +42,7 @@ services:
       - api-media:/usr/app/ancean/media      
       - api-static:/usr/app/ancean/static
     depends_on:
-      - postgres
+      - db
     networks:
       - ancean-prod-net
 
@@ -53,14 +53,16 @@ services:
     environment:
       MYSQL_DATABASE: ancean
       MYSQL_USER: ancean
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: 0oe(5i%b3+rmard95=3bj=-bo1e8df3pinirh8m0xxjd*-67f
+      MYSQL_PASSWORD: g=@#tlb074vn5av(3=(bp%lnmx1077y@oe2*pd3f729n4%5
     secrets:
       - source: mysql-secrets
         target: /secrets/mysql-password.txt
     volumes:
       - mysql-data:/var/lib/mysql
-      - mysql-backup:/backup
+      - mysql-backup:/backups
+    env_file:
+      - .env
     networks:
       - ancean-prod-net
 
@@ -80,7 +82,6 @@ volumes:
     driver_opts:
       type: nfs
       o: addr=172.31.18.234,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
-      device: "172.31.18.234:/efs/mysql"
 
   mysql-backup:
     driver: local
