@@ -3,7 +3,6 @@
 ancean-back/
 ancean-front/
 
-jenkins/
 secrets/
 
 secret.yaml
