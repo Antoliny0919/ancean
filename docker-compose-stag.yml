@@ -48,7 +48,7 @@ services:
       POSTGRES_PASSWORD_FILE: /secrets/postgres-password
     volumes:
       - $HOME/prod-data/backup:/backup
-        - type: volume
+      - type: volume
         source: postgres-data
         target: /var/lib/postgresql/data
       # - $HOME/data:/var/lib/postgresql/data
@@ -57,6 +57,30 @@ services:
         target: /secrets/postgres-password
     networks:
       - ancean-stag-net
+
+        # db:
+  #   image: mariadb:latest
+  #   container_name: db-local
+  #   volumes: 
+  #     - ./data:/var/lib/mysql
+  #     - ./stag-data/backup:/backup
+  #   secrets:
+  #     - source: mysql-secrets
+  #       target: /secrets/mysql-password.txt
+  #   environment:
+  #     MYSQL_DATABASE: ancean
+  #     MYSQL_USER: ancean
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  #   restart: unless-stopped
+  #   # healthcheck:
+  #   #   test: ["CMD", "mysqladmin", "ping", "-h", "db-local"]
+  #   #   timeout: 20s
+  #   #   retries: 5
+  #   ports:
+  #     - 3306:3306
+  #   networks:
+  #     - ancean-local-net
 
   registry:
     image: registry:2
