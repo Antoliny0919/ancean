@@ -37,6 +37,7 @@ services:
     container_name: jenkins-master
     volumes:
       - $PWD/jenkins/jenkins_home:/var/jenkins_home
+      - $PWD/aws/secrets/ec2-pem-ssh.pem:/secrets/prod-key
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 8080:8080
