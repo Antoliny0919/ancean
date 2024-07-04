@@ -55,12 +55,9 @@ services:
       MYSQL_USER: ancean
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    secrets:
-      - source: mysql-secrets
-        target: /secrets/mysql-password.txt
     volumes:
       - mysql-data:/var/lib/mysql
-      - mysql-backup:/backups
+      - $PWD/backup:/backup
     env_file:
       - .env
     networks:
@@ -73,8 +70,6 @@ configs:
 secrets:
   api-secrets:
     file: ./swarm/secrets/django-secrets.json
-  mysql-secrets:
-    file: ./swarm/secrets/mysql-password.txt
 
 volumes:
   mysql-data:
@@ -82,13 +77,7 @@ volumes:
     driver_opts:
       type: nfs
       o: addr=172.31.18.234,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
-
-  mysql-backup:
-    driver: local
-    driver_opts:
-      type: nfs
-      o: addr=172.31.18.234,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
-      device: "172.31.18.234:/efs/backups"
+      device: "172.31.18.234:/efs/mysql"
 
   api-media:
     driver: local
