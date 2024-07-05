@@ -1,0 +1,42 @@
+pipeline {
+  agent any
+
+  environment {
+    DB_PASS = credentials('db-pw-credential')
+    AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+    MY_SERVER_IP = credentials('my_server_ip')
+    TODAY = sh (
+    returnStdout: true,
+    script: 'date +%Y-%m-%d',
+    ).trim()
+    REMOTE_SCRIPT_PATH = '/home/ubuntu/ancean/jenkins/pipeline/db-backup'
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+	      sh '''
+          ssh -i /secrets/prod-key -o StrictHostKeyChecking=no ubuntu@$MY_SERVER_IP \
+          "$REMOTE_SCRIPT_PATH/build.sh '$DB_PASS' 'ancean-backup-$TODAY.sql'"
+	      '''
+      }
+    }
+    stage('Deploy') {
+      steps {
+        sh '''
+          ssh -i /secrets/prod-key -o StrictHostKeyChecking=no ubuntu@$MY_SERVER_IP \
+          "$REMOTE_SCRIPT_PATH/deploy.sh '$AWS_ACCESS_KEY_ID' '$AWS_SECRET_ACCESS_KEY' 'ancean-backup-$TODAY.sql'"
+        '''
+      }
+    }
+    stage('Clear') {
+      steps {
+        sh '''
+          ssh -i /secrets/prod-key -o StrictHostKeyChecking=no ubuntu@$MY_SERVER_IP \
+          "$REMOTE_SCRIPT_PATH/clear.sh"
+        '''
+      }
+    }
+  }
+}
