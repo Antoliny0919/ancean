@@ -1,0 +1,31 @@
+pipeline {
+  agent any
+
+  environment {
+    IMAGE_TAG = 'v1.0.2'
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+	      sh '''
+        echo "build stage"
+	      '''
+      }
+    }
+    stage('Deploy Stag') {
+      steps {
+        sh '''
+        echo "deploy stag env stage
+        '''
+      }
+    }
+    stage('Build Prod') {
+      steps {
+        sh '''
+        echo Build Prod env stage"
+        '''
+      }
+    }
+  }
+}

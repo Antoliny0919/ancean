@@ -39,6 +39,8 @@ services:
       - $PWD/jenkins/jenkins_home:/var/jenkins_home
       - $PWD/aws/secrets/ec2-pem-ssh.pem:/secrets/prod-key
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./ancean-back:/ancean/ancean-back
+      - ./ancean-front:/ancean/ancean-front
     ports:
       - 8080:8080
     networks:

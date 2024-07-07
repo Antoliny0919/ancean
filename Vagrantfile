@@ -14,6 +14,8 @@ Vagrant.configure("2") do |config|
     cfg.vm.network "private_network", ip: "192.168.1.10"
     cfg.vm.network "forwarded_port", guest: 22, host:60010, auto_correct: true, id: "ssh"
     cfg.vm.synced_folder "./stag-data", "/home/vagrant/prod-data"
+    # cfg.vm.synced_folder "/var/run/", "/var/run/", type: "rsync", rsync__args: ["-r", "--include=docker.sock"]
+    # cfg.vm.provision "file", source: "/var/run/docker.sock", destination: "/var/run/docker.sock"
     cfg.vm.provision "shell", path: "./swarm/shell/install.sh"
     cfg.vm.provision "shell", path: "./swarm/shell/config.sh", args: 1
     cfg.vm.synced_folder "/Users/antoliny0919/.ssh", "/home/vagrant/ssh"
