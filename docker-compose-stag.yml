@@ -1,8 +1,6 @@
-version: '3.7'
-
 services:
 
-  nginx:
+  nginx: 
     image: nginx:1.24.0
     deploy:
       mode: global
@@ -10,84 +8,57 @@ services:
       - source: nginx-conf
         target: /etc/nginx/nginx.conf
     volumes:
-      - $HOME/prod-data/media:/app/usr/media
-      - $HOME/prod-data/x509/nginx-tls.crt:/etc/cert/nginx-tls.crt
-      - $HOME/prod-data/x509/nginx-tls.key:/etc/cert/nginx-tls.key
+      - $HOME/prod-data/media:/app/user/media
+      - $HOME/prod-data/static:/app/user/static
     ports:
       - 80:80
       - 443:443
     depends_on:
       - api
+      - web
     networks:
       - ancean-stag-net
 
   api:
-    image: 192.168.1.10:5000/ancean-back-stag:v1.0.0
+    image: 192.168.1.10:5000/ancean-back-stag:${BACK_VERSION}
     deploy:
-      replicas: 5
+      replicas: 1
     secrets:
       - source: api-secrets
         target: /usr/app/ancean/secrets/django-secrets.json
     volumes:
       - $HOME/prod-data/media:/usr/app/ancean/media
       - $HOME/prod-data/static:/usr/app/ancean/static
+    depends_on:
+      - registry
+      - db
     ports:
       - 8000:8000
-    depends_on:
-      - postgres
     networks:
       - ancean-stag-net
 
-  postgres:
-    image: postgres:16.3
+  db:
+    image: mariadb:latest
     deploy:
       mode: global
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: ancean
-      POSTGRES_PASSWORD_FILE: /secrets/postgres-password
+      MYSQL_DATABASE: ancean
+      MYSQL_USER: ancean
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - $HOME/prod-data/backup:/backup
-      - type: volume
-        source: postgres-data
-        target: /var/lib/postgresql/data
-      # - $HOME/data:/var/lib/postgresql/data
-    secrets:
-      - source: postgres-secrets
-        target: /secrets/postgres-password
+      - $HOME/mysql:/var/lib/mysql
     networks:
       - ancean-stag-net
-
-        # db:
-  #   image: mariadb:latest
-  #   container_name: db-local
-  #   volumes: 
-  #     - ./data:/var/lib/mysql
-  #     - ./stag-data/backup:/backup
-  #   secrets:
-  #     - source: mysql-secrets
-  #       target: /secrets/mysql-password.txt
-  #   environment:
-  #     MYSQL_DATABASE: ancean
-  #     MYSQL_USER: ancean
-  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  #   restart: unless-stopped
-  #   # healthcheck:
-  #   #   test: ["CMD", "mysqladmin", "ping", "-h", "db-local"]
-  #   #   timeout: 20s
-  #   #   retries: 5
-  #   ports:
-  #     - 3306:3306
-  #   networks:
-  #     - ancean-local-net
 
   registry:
     image: registry:2
     volumes:
-      - ./stag-registry:/var/lib/registry
+      - $HOME/stag-registry:/var/lib/registry
     ports:
       - 5000:5000
+    networks:
+      - ancean-stag-net
 
 configs:
   nginx-conf:
@@ -96,15 +67,3 @@ configs:
 secrets:
   api-secrets:
     file: ./swarm/secrets/django-secrets.json
-  postgres-secrets:
-    file: ./swarm/secrets/postgres-password.txt
-
-volumes:
-  postgres-data:
-    driver_opts:
-      type: nfs
-      o: addr=192.168.1.10,nolock,soft,rw
-      device: :/postgres/data 
-
-networks:
-  ancean-stag-net:

@@ -11,6 +11,7 @@ secret.yaml
 .env
 .vagrant
 stag-data/
+stag-registry/
 data/
 kube/
 jenkins/jenkins_home/
