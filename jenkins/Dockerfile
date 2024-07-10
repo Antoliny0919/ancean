@@ -36,5 +36,9 @@ RUN apt-get install -y unzip && \
     unzip awscliv2.zip && ./aws/install && \
     rm -rf aws awscliv2.zip
 
+# install sshpass
+
+RUN apt-get install -y sshpass
+
 USER jenkins
 
