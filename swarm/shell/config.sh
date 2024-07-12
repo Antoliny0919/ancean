@@ -1,7 +1,5 @@
-# docker daemon.json add insecure-registries master node registry ip
+# Register the registry to obtain the image from
 
-# MASTERNAME="master-node"
-# HOSTNAME=$1
 IS_MASTER=$1
 
 sudo chown root:vagrant /etc/docker
@@ -20,8 +18,6 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 
 if [ ! -z $IS_MASTER ] ; then
-  # sudo unlink /bin/sh
-  # sudo ln -s /bin/bash /bin/sh
 
   HOME=/home/vagrant
 
@@ -33,9 +29,13 @@ if [ ! -z $IS_MASTER ] ; then
 
   chown -R vagrant:vagrant ancean
 
+  # Get a secret file from the host
   sshpass -p $LOCAL_PASS scp -o StrictHostKeyChecking=no \ 
   antoliny0919@192.168.0.9:/Users/antoliny0919/ancean/swarm/secrets/django-secrets.json \
   $HOME/ancean/swarm/secrets/django-secrets.json
+
+  
+
 
   docker swarm init --advertise-addr=192.168.1.10
 

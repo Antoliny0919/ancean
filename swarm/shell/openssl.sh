@@ -1,11 +1,16 @@
-SSL_PATH=/home/vagrant/ssl
-OPENSSL_VERSION=openssl-3.3.0.tar.gz
-COUNTRY=KR
-STATE=Seoul
-LOCALITY=Seoul
-COMMON_NAME=ancean.stag
-EMAIL_ADDR=antoliny0919@gmail.com
+SSL_PATH="/home/vagrant/ssl"
+OPENSSL_VERSION="openssl-3.3.0.tar.gz"
 
+# OpenSSL Config
+COUNTRY_NAME="KR"
+STATE_OR_PROVINCE_NAME="Seoul"
+LOCALITY_NAME="Seoul"
+ORGANIZATION_NAME=""
+ORGANIZATIONAL_UNIT_NAME=""
+COMMON_NAME="ancean.stag"
+
+OPENSSL_SUBJ="/C=$COUNTRY_NAME/ST=$STATE_OR_PROVINCE_NAME/L=$LOCALITY_NAME/O=$ORGANIZATION_NAME/OU=$ORGANIZATIONAL_UNIT_NAME\
+/CN=$COMMON_NAME"
 
 # Install OpenSSL
 
@@ -15,19 +20,15 @@ tar -xvf $OPENSSL_VERSION -C /usr/local/bin
 
 rm -rf $OPENSSL_VERSION
 
-# if [ ! -d $1 ]; then
-#   echo "$1 Folder does not exist in the path. Create a folder."
-#   mkdir -p $1
-# fi
-
 mkdir -p $SSL_PATH && cd $SSL_PATH
 
 openssl genrsa -out nginx-tls.key 2048
 
 openssl rsa -in nginx-tls.key -pubout -out nginx-tls
 
-openssl req -new -key nginx-tls.key -out nginx-tls.csr \
-        -subj "/C=KR/ST=Seoul/L=Seoul/CN=ancean.stag/emailAddress=antoliny0919@gmail.com"
+# Create SSL by OpenSSL
+
+openssl req -new -key nginx-tls.key -out nginx-tls.csr -subj $OPENSSL_SUBJ
 
 openssl req -x509 -days 3650 -key nginx-tls.key -in nginx-tls.csr -out nginx-tls.crt
 

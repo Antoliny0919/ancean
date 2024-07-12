@@ -8,14 +8,23 @@ services:
       - source: nginx-conf
         target: /etc/nginx/nginx.conf
     volumes:
-      - $HOME/prod-data/media:/app/user/media
-      - $HOME/prod-data/static:/app/user/static
+      - $HOME/prod-data/media:/app/usr/media
+      - $HOME/prod-data/static:/app/usr/static
+      - $HOME/ssl:/etc/cert
     ports:
       - 80:80
       - 443:443
     depends_on:
       - api
-      - web
+    networks:
+      - ancean-stag-net
+
+  web:
+    image: 192.168.1.10:5000/ancean-front-stag:${FRONT_VERSION}
+    deploy:
+      replicas: 1
+    depends_on:
+      - api
     networks:
       - ancean-stag-net
 
@@ -67,3 +76,8 @@ configs:
 secrets:
   api-secrets:
     file: ./swarm/secrets/django-secrets.json
+
+
+
+networks:
+  ancean-stag-net:
