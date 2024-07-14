@@ -47,6 +47,15 @@ services:
       - 8080:8080
     networks:
       - ancean-local-net
+  
+  locust:
+    image: locustio/locust:latest
+    container_name: locust
+    ports:
+      - 8089:8089
+    networks:
+      - ancean-local-net
+   
 
 secrets:
   django-connection:

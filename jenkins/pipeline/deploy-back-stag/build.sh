@@ -6,7 +6,7 @@ echo "***********************************************"
 
 TARGET_PATH=$1
 IMAGE_TAG=$2
-IMAGE_NAME=ancean-back-stag
+IMAGE_NAME=ancean-api
 REGISTRY_IP=192.168.1.10
 
 #pytest

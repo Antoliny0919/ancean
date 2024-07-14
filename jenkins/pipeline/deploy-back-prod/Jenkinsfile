@@ -1,0 +1,38 @@
+pipeline {
+  agent any
+
+  environment {
+    AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+    MY_SERVER_IP = credentials('my_server_ip')
+    IMAGE_TAG = 'v1.1.2'
+    SCRIPT_PATH ='/var/jenkins_home/my_pipeline/deploy-back-prod'
+  }
+
+  stages {
+    stage('Execution Stag Pipeline') {
+      steps {
+        build job: 'deploy-and-test-stag'
+      }
+      post {
+        success {
+          input(message: 'Hello World!', ok: 'Submit')
+        }
+      }
+    }
+    stage('Build') {
+      steps {
+        sh '''
+        sh $SCRIPT_PATH/build.sh /ancean/ancean-back $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY $IMAGE_TAG 
+        '''
+      }
+    }
+    stage('Deploy') {
+      steps {
+        sh '''
+        sh $SCRIPT_PATH/deploy.sh $MY_SERVER_IP $IMAGE_TAG
+        '''
+      }
+    }
+  }
+}

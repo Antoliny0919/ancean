@@ -3,6 +3,7 @@
 echo "**************************************************"
 echo "********** Deploy Backup File To AWS S3 **********"
 echo "**************************************************"
+
 AWS_ACCESS_KEY_ID=$1
 AWS_SECRET_ACCESS_KEY=$2
 TARGET_FILE=$3

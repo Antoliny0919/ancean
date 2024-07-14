@@ -3,18 +3,18 @@ pipeline {
 
   environment {
     IMAGE_TAG = 'v1.1.2'
-    SCRIPT_PATH ='/var/jenkins_home/my_pipeline/deploy-back'
+    SCRIPT_PATH ='/var/jenkins_home/my_pipeline/deploy-back-stag'
   }
 
   stages {
-    stage('Build Stag') {
+    stage('Build') {
       steps {
         sh '''
         sh $SCRIPT_PATH/build.sh /ancean/ancean-back $IMAGE_TAG
         '''
       }
     }
-    stage('Deploy Stag') {
+    stage('Deploy') {
       steps {
         sh '''
         sh $SCRIPT_PATH/deploy.sh $IMAGE_TAG
@@ -24,21 +24,7 @@ pipeline {
     stage('Test Stag') {
       steps {
         sh '''
-        echo Test Stag"
-        '''
-      }
-    }
-    stage('Build Prod') {
-      steps {
-        sh '''
-        echo Build Prod"
-        '''
-      }
-    }
-    stage('Deploy Prod') {
-      steps {
-        sh '''
-        echo Deploy Prod"
+        echo Test Stag
         '''
       }
     }
