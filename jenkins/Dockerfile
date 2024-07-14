@@ -27,7 +27,7 @@ RUN mkdir -p $DOCKER_CONFIG/cli-plugins && \
 
 RUN usermod -aG docker jenkins
 
-RUN chown -R jenkins:jenkins /.docker
+RUN chown -R jenkins:jenkins /.docker 
 
 # install aws-cli
 

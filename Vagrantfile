@@ -19,12 +19,11 @@ Vagrant.configure("2") do |config|
     cfg.vm.synced_folder "./stag-data", "/home/vagrant/prod-data"
     cfg.vm.provision "shell", path: "./swarm/shell/install.sh"
     cfg.vm.provision :shell do |s|
-      s.env = {LOCAL_PATH:ENV['LOCAL_PATH']}
+      s.env = {LOCAL_PATH:ENV['LOCAL_PATH'], LOCAL_PATH:ENV['LOCAL_FORWARD_PORT'], LOCAL_DNS:ENV['LOCAL_DNS']}
       s.path = "./swarm/shell/config.sh"
       s.args = [1]
     end 
-    # cfg.vm.provision "shell", path: "./swarm/shell/config.sh", args: [1]
-    # cfg.vm.progision "shell", path: "./swarm/shell/nfs.sh"
+    cfg.vm.provision "shell", path: "./swarm/shell/openssl.sh"
   end
 
   (1..W).each do |i|

@@ -30,12 +30,9 @@ if [ ! -z $IS_MASTER ] ; then
   chown -R vagrant:vagrant ancean
 
   # Get a secret file from the host
-  sshpass -p $LOCAL_PASS scp -o StrictHostKeyChecking=no \ 
-  antoliny0919@192.168.0.9:/Users/antoliny0919/ancean/swarm/secrets/django-secrets.json \
+  sshpass -p $LOCAL_PASS scp -o StrictHostKeyChecking=no -P $LOCAL_FORWARD_PORT\ 
+  antoliny0919@$LOCAL_DNS:/Users/antoliny0919/ancean/swarm/secrets/django-secrets.json\
   $HOME/ancean/swarm/secrets/django-secrets.json
-
-  
-
 
   docker swarm init --advertise-addr=192.168.1.10
 
