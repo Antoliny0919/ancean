@@ -8,6 +8,8 @@ PROJECT_NAME=ancean
 BUILD_TARGET_PATH=/$PROJECT_NAME/$SERVICE_NAME
 IMAGE_NAME=$PROJECT_NAME-$SERVICE_NAME
 
+
+
 echo "********** Build $BUILD_ENV Env $(echo $SERVICE_NAME | tr '[:lower:]' '[:upper:]') Image **********"
 
 case $BUILD_ENV in 
