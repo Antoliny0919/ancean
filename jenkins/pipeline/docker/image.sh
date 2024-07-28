@@ -30,11 +30,15 @@ die() {
   exit 1
 }
 
+login_ecr() {
+  bash $HOME/my_pipeline/aws/iam-configure.sh $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY
+  aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $REGISTRY
+  [[ ! $? -eq 0 ]] && die "AWS ECR docker login fail"
+}
+
 parse_params() {
 
   eval set -- $options
-
-  echo $options
 
   while true; do
     case "$1" in
@@ -47,9 +51,6 @@ parse_params() {
         shift 2;;
       --ecr)
         USE_ECR=1
-        bash $HOME/my_pipeline/aws/iam-configure.sh $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY
-        aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin $REGISTRY
-        [[ ! $? -eq 0 ]] && die "AWS ECR docker login fail"
         shift ;;
       ?)
         exit 1
@@ -90,7 +91,10 @@ parse_params $options
 
 [[ $PROCEED_BUILD -eq 1 ]] && build
 
+[[ $USE_ECR -eq 1 ]] && login_ecr
+
 docker context use default
+
 docker tag $IMAGE_NAME:$IMAGE_TAG $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
 
