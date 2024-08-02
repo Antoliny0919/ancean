@@ -2,14 +2,14 @@ pipeline {
   agent any
 
   environment {
-    IMAGE_TAG = 'v1.0.2'
+    IMAGE_TAG = 'v5.0.0'
   }
 
   stages {
     stage('Build') {
       steps {
 	      sh '''
-        echo "build stage"
+          sh 
 	      '''
       }
     }
