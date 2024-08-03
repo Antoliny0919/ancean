@@ -20,7 +20,7 @@ services:
       - ancean-stag-net
 
   web:
-    image: 192.168.1.10:5000/ancean-front-stag:${FRONT_VERSION}
+    image: 192.168.1.10:5000/ancean-api:${WEB_VERSION}
     deploy:
       replicas: 1
     depends_on:
@@ -29,7 +29,7 @@ services:
       - ancean-stag-net
 
   api:
-    image: 192.168.1.10:5000/ancean-back-stag:${BACK_VERSION}
+    image: 192.168.1.10:5000/ancean-web:${API_VERSION}
     deploy:
       replicas: 1
     secrets:

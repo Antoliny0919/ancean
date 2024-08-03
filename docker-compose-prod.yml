@@ -23,7 +23,7 @@ services:
       - ancean-prod-net
 
   web:
-    image: 339713165736.dkr.ecr.ap-northeast-2.amazonaws.com/ancean-front-prod:latest
+    image: 339713165736.dkr.ecr.ap-northeast-2.amazonaws.com/ancean-web:${WEB_TAG}
     deploy:
       replicas: 1
     depends_on:
@@ -32,7 +32,7 @@ services:
       - ancean-prod-net
 
   api:
-    image: 339713165736.dkr.ecr.ap-northeast-2.amazonaws.com/ancean-back-prod:latest
+    image: 339713165736.dkr.ecr.ap-northeast-2.amazonaws.com/ancean-api:${API_TAG}
     deploy:
       replicas: 1
     secrets:
