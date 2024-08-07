@@ -96,9 +96,17 @@ parse_params() {
 
 REQUIRE_POSITIONAL_ARGUMENTS_CNT=3
 BACKUP_FILE=""
+REQUIRE_ENV_VARIABLES=("AWS_ACCESS_KEY_ID" "AWS_SECRET_ACCESS_KEY" "DB_PASS")
+
+source ../base.sh
+
+for env in ${REQUIRE_ENV_VARIABLES[@]}; do
+  [[ -z $(env | grep "^${env}=") ]] && die "AWS IAM config(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY), \
+db password(DB_PASS) must be set for env variable"
+done
 
 # base setting && set AWS IAM to use S3 bucket
-source ../base.sh && source $HOME/my_pipeline/aws/iam-configure.sh $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY
+source $HOME/my_pipeline/aws/iam-configure.sh $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY
 
 options=$(getopt -o hb: -l help,backup: -- "$@")
 
