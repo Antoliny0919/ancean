@@ -1,33 +1,33 @@
 #!/bin/bash
 
-echo "***************************************"
-echo "********** Build Backup File **********"
-echo "***************************************"
+echo "**************************************************"
+echo "********** Deploy Backup File To AWS S3 **********"
+echo "**************************************************"
 
-DB_PASS=$1
-TARGET_FILE=$2
-PROD_IP=$3
+AWS_ACCESS_KEY_ID=$1
+AWS_SECRET_ACCESS_KEY=$2
+TARGET_FILE=$3
+TRANSFER_DATA_PATH="/var/jenkins_home"
+BUCKET_PATH="ancean-bucket/backup"
 
-SAVE_FOLDER_PATH=$HOME/ancean/backup
-CONTEXT_NAME=prod
+echo "Gets the backup file from the database container."
 
-docker context ls | grep $CONTEXT_NAME
+docker cp $(docker ps -q -f name=ancean_db | head -n1):/backup/$TARGET_FILE $TRANSFER_DATA_PATH
 
-if [ ! $? -eq 0 ]; then
-  echo "Docker engine in the production environment are not ready for use."
-  docker context create $CONTEXT_NAME --docker "host=tcp://$PROD_IP:2375"
-fi
+echo "Configure AWS IAM"
 
-echo "For database backups, switch to the production environment docker context where the database is running."
+aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID && \
+aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY && \
+aws configure set region "ap-northeast-2" && \
+aws configure set output "text" 
 
-docker context use $CONTEXT_NAME
+echo "Deploy backup file > s3://$BUCKET_PATH/$TARGET_FILE"
 
-docker exec $(docker ps -q -f name=ancean_db | head -n1) \
-sh -c "mariadb-dump --user=ancean --password='$DB_PASS' ancean > /backup/$TARGET_FILE"
+aws s3 cp $TRANSFER_DATA_PATH/$TARGET_FILE s3://$BUCKET_PATH/$TARGET_FILE
 
-if [ ! $? -eq 0 ]; then
-  echo "Backup file build fail"
-  exit 1
-fi
+echo "Remove backup file in local/container"
 
-echo "Backup file build success"
+docker exec -it $(docker ps -q -f name=ancean_db | head -n1) \
+sh -c "rm -rf /backup/$TARGET_FILE"
+
+rm -rf $TRANSFER_DATA_PATH/$TARGET_FILE

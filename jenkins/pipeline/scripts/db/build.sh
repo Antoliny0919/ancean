@@ -30,4 +30,4 @@ if [ ! $? -eq 0 ]; then
   exit 1
 fi
 
-echo "Backup file build success"
+echo "Backup file build success"  

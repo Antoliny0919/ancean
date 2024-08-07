@@ -20,7 +20,7 @@ pipeline {
     returnStdout: true,
     script: 'date +%Y-%m-%d',
     ).trim()
-    SCRIPT_PATH = '/var/jenkins_home/my_pipeline/db-backup'
+    SCRIPT_PATH = '/var/jenkins_home/my_pipeline/scripts/db'
   }
 
   stages {
