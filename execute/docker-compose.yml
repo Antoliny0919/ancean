@@ -1,0 +1,62 @@
+services:
+
+  api:
+    build:  
+      context: $HOME/ancean/api
+      dockerfile: Dockerfile.local
+    container_name: api-local
+    volumes:
+      - $HOME/ancean/api:/usr/app
+    secrets:
+      - source: django-connection
+        target: /usr/app/ancean/secrets/django-secrets.json
+    ports:
+      - 8000:8000
+    networks:
+      - ancean-local-net
+
+  web:
+    build:
+      context: $HOME/ancean/web
+      dockerfile: Dockerfile.local
+    container_name: web-local
+    volumes:
+      - /usr/app/node_modules
+      - $HOME/ancean/web:/usr/app
+    environment:
+      CHOKIDAR_USEPOLLING: true
+      EXECUTION_ENV: local
+    ports:
+      - 3000:3000
+    networks:
+      - ancean-local-net
+
+  jenkins-master:
+    build:
+      context: $HOME/ancean/jenkins
+    container_name: jenkins-master
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $HOME/.docker/contexts:/.docker/contexts
+      - $HOME/ancean/jenkins/jenkins_home:/var/jenkins_home
+      - $HOME/ancean/jenkins/pipeline:/var/jenkins_home/my_pipeline
+    ports:
+      - 8080:8080
+    networks:
+      - ancean-local-net
+  
+  # locust:
+    # image: locustio/locust:latest
+    # container_name: locust
+    # ports:
+    #   - 8089:8089
+    # networks:
+    #   - ancean-local-net
+   
+
+secrets:
+  django-connection:
+    file: $HOME/ancean/swarm/secrets/django-secrets.json
+
+networks:
+  ancean-local-net:

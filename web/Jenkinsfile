@@ -1,0 +1,52 @@
+def IMAGE_TAG = null
+
+pipeline {
+  agent any
+
+  environment {
+    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+    MY_ECR_REGISTRY = credentials('my-ecr-registry')
+  }
+
+  stages {
+    stage("Get Tag From Stag") {
+      steps {
+        sh "docker context use stag"
+        script {
+          IMAGE_TAG = sh( 
+            returnStdout: true,
+            script: """
+            docker service ls --format='{{ .Image }}' | grep -E '^192.168.1.10:5000[/]ancean-web[:]' | grep -oP 'v[0-9]*[.][0-9]*[.][0-9]*'
+            """).trim()
+        }
+        sh "docker context use default"
+      }
+    }
+    stage("Build") {
+      when { expression { 
+        isTag = (IMAGE_TAG ==~ /v[0-9]*[.][0-9]*[.][0-9]*/)
+        return isTag
+      } }
+      steps {
+        sh """
+          bash $HOME/my_pipeline/scripts/docker/image.sh \
+          --build="APP_ENV=prod" \
+          --ecr \
+          -- web ${IMAGE_TAG} $MY_ECR_REGISTRY
+        """
+      }
+    }
+    stage("Deploy") {
+      steps {
+        sh """
+          bash $HOME/my_pipeline/scripts/docker/update.sh \
+          --ecr \
+          --context=prod \
+          --stack=ancean \
+          -- web ${IMAGE_TAG} $MY_ECR_REGISTRY
+        """
+      }
+    }
+  }
+}

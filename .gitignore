@@ -1,0 +1,72 @@
+# only provide infrastructure related file
+
+ancean-back/
+ancean-front/
+
+secrets/
+
+secret.yaml
+
+.DS_Store
+.env
+.vagrant
+stag-data/
+stag-registry/
+data/
+kube/
+jenkins/jenkins_home/
+aws/secrets/
+local-mysql/
+
+
+# api
+*.log
+*.pot
+*.pyc
+api/__pycache__/
+db.sqlite3
+db.sqlite3-journal
+api/ancean/media
+api/ancean/secrets/
+api/ancean/static/
+api/.pytest_cache
+
+# web
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/web/build
+
+# misc
+.DS_Store
+*.pem
+
+# secret
+.env
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

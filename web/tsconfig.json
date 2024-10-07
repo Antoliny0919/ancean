@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/signup/data.jsx", "components/signup/SignUpHeader.jsx", "components/signup/SignUpFooter.jsx", "components/signup/SignUpContainer.jsx", "components/signup/SignUpBody.jsx", "components/signup/SignInput.jsx", "components/signup/items/TrackingProgressBar.jsx", "components/signup/style/Input.jsx", "components/common/FadeInEffect.jsx", "components/common/Button.jsx", "components/signup/process/SignUpSuccess.jsx", "components/signup/process/ServiceAgreement.jsx", "components/signup/process/IDandPW.jsx", "components/signup/process/EmailAuth.jsx", "components/signup/modules/process.js", "components/signup/modules/formSlice.js", "pages/member/signup.jsx", "pages/index.jsx", "pages/_document.tsx", "pages/_app.tsx", "components/home/PopularWriting.jsx", "pages/sitemap.xml.js"],
+  "exclude": ["node_modules"]
+}

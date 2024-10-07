@@ -1,0 +1,50 @@
+// def slackSuccessResponse = slackSend(channel: "#jenkins",
+// message: """
+// PipelineName: ${env.JOB_NAME}
+// PipelineBuildNumber: ${env.BUILD_NUMBER}
+// Message: pipeline terminated successfully. The data backup file has been saved to s3 --> ancean-backup-${TODAY}.sql
+// s3: https://ap-northeast-2.console.aws.amazon.com/s3/buckets/ancean-bucket?region=ap-northeast-2&bucketType=general&prefix=backup/&showversions=false
+// """,
+// color: "good"
+// )
+
+pipeline {
+  agent any
+
+  environment {
+    DB_PASS = credentials('db-password')
+    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+    TODAY = sh (
+    returnStdout: true,
+    script: 'date +%Y-%m-%d',
+    ).trim()
+    SCRIPT_PATH = '/var/jenkins_home/my_pipeline/scripts/db'
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+	      sh '''
+          sh $SCRIPT_PATH/build.sh ${DB_PASS} ancean-backup-$TODAY.sql 
+	      '''
+      }
+    }
+    stage('Deploy') {
+      steps {
+        sh '''
+           sh $SCRIPT_PATH/deploy.sh ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} ancean-backup-$TODAY.sql
+        '''
+      }
+      // post {
+      //   success {
+      //     slackSend(
+      //     channel: slackSuccessReponse.channelId,
+      //     message: slackSuccessResponse.message,
+      //     color: slackSuccessResponse.color
+      //     )
+      //   }
+      // }
+    }
+  }
+}

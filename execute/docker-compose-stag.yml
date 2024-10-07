@@ -1,0 +1,83 @@
+services:
+
+  nginx: 
+    image: nginx:1.24.0
+    deploy:
+      mode: global
+    configs:
+      - source: nginx-conf
+        target: /etc/nginx/nginx.conf
+    volumes:
+      - $HOME/prod-data/media:/app/usr/media
+      - $HOME/prod-data/static:/app/usr/static
+      - $HOME/ssl:/etc/cert
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - api
+    networks:
+      - ancean-stag-net
+
+  web:
+    image: 192.168.1.10:5000/ancean-api:${WEB_VERSION}
+    deploy:
+      replicas: 1
+    depends_on:
+      - api
+    networks:
+      - ancean-stag-net
+
+  api:
+    image: 192.168.1.10:5000/ancean-web:${API_VERSION}
+    deploy:
+      replicas: 1
+    secrets:
+      - source: api-secrets
+        target: /usr/app/ancean/secrets/django-secrets.json
+    volumes:
+      - $HOME/prod-data/media:/usr/app/ancean/media
+      - $HOME/prod-data/static:/usr/app/ancean/static
+    depends_on:
+      - registry
+      - db
+    ports:
+      - 8000:8000
+    networks:
+      - ancean-stag-net
+
+  db:
+    image: mariadb:11.4
+    deploy:
+      mode: global
+    environment:
+      MYSQL_DATABASE: ancean
+      MYSQL_USER: ancean
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - $HOME/mysql:/var/lib/mysql
+    networks:
+      - ancean-stag-net
+
+  registry:
+    image: registry:2
+    volumes:
+      - $HOME/stag-registry:/var/lib/registry
+    ports:
+      - 5000:5000
+    networks:
+      - ancean-stag-net
+
+configs:
+  nginx-conf:
+    file: ./swarm/configs/nginx/nginx-stag.conf
+
+secrets:
+  api-secrets:
+    file: ./swarm/secrets/django-secrets.json
+
+
+
+networks:
+  ancean-stag-net:

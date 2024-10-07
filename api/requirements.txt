@@ -1,0 +1,16 @@
+requests
+tzdata
+pytz
+mysqlclient
+django
+django-filter
+django-prometheus
+django-cors-headers
+djangorestframework
+djangorestframework-simplejwt
+psycopg2-binary
+pyjwt
+gunicorn
+Pillow
+pytest-django
+django-redis

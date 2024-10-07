@@ -1,0 +1,9 @@
+[flake8]
+exclude =  api/*/migrations/* 
+max-line-length = 100
+indent-size = 2
+show-source = True
+extend-ignore = E303, F811
+per-file-ignores =
+  api/ancean/settings/*:E501, F401, F403, F405
+

@@ -1,0 +1,74 @@
+import groovy.json.JsonSlurper
+
+def pullRequestState = null
+def IMAGE_TAG = null
+
+pipeline {
+  agent any
+  
+  parameters { string(name: 'payload', defaultValue: '', description: 'test') }
+
+  environment {
+    AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+    AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')    
+  }
+
+  stages {
+    stage("parse-params") {
+      steps {
+        script {
+	  def myobj = new JsonSlurper().parseText(payload)
+	  pullRequestState = myobj.pull_request.state
+        }
+      }
+    }
+    stage("opened") {
+      when {
+        expression { return pullRequestState == "open" }
+      }
+      stages {
+        stage("Test") {
+          steps {
+            echo "A testing process is required. Pytest"
+          }
+        }
+      }
+    }
+    stage("closed") {
+      when {
+        expression { return pullRequestState == "closed" }
+      }
+      stages {
+        stage("Build") {
+          input {
+            message "Please enter the image version to be created. format v{major}.{minor}.{patch}"
+            ok "Submit"
+            parameters {
+              string(name: "TAG", defaultValue: "latest", description: "Tag of the image to be distributed")
+            }
+          }
+          steps {
+	    script {
+              IMAGE_TAG = sh(returnStdout: true, script: "echo $TAG").trim()
+            }
+            sh """
+              bash $HOME/my_pipeline/scripts/docker/image.sh \
+              --build='APP_ENV=stag' \
+              -- web ${IMAGE_TAG} 192.168.1.10:5000
+            """
+          }
+        }
+        stage("Deploy") {
+          steps {
+            sh """
+              bash $HOME/my_pipeline/scripts/docker/update.sh \
+              --context=stag \
+              --stack=ancean \
+              -- web ${IMAGE_TAG} 192.168.1.10:5000
+            """
+          }
+        }
+      }
+    }
+  }
+} 

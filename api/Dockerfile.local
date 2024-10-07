@@ -1,0 +1,17 @@
+FROM python:3.11-alpine
+
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /usr/app
+
+COPY requirements.txt .
+
+RUN sed '/mysqlclient/d' requirements.txt | tee requirements.txt
+
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+ENV DJANGO_SETTINGS_MODULE ancean.settings.local
+
+EXPOSE 8000
+
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
