@@ -1,0 +1,100 @@
+version: "3.7"
+
+services:
+
+  nginx:
+    image: nginx:1.24.0
+    deploy:
+      mode: global
+    configs:
+      - source: nginx-conf
+        target: /etc/nginx/nginx.conf
+    volumes:
+      - api-static:/app/usr/static
+      - api-media:/app/usr/media
+        # - nginx-cache:/data/nginx/cache
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - api
+      - web
+    networks:
+      - ancean-prod-net
+
+  web:
+    image: 339713165736.dkr.ecr.ap-northeast-2.amazonaws.com/ancean-web:${WEB_TAG}
+    deploy:
+      replicas: 1
+    depends_on:
+      - api
+    networks:
+      - ancean-prod-net
+
+  api:
+    image: 339713165736.dkr.ecr.ap-northeast-2.amazonaws.com/ancean-api:${API_TAG}
+    deploy:
+      replicas: 1
+    secrets:
+      - source: api-secrets
+        target: /usr/app/ancean/secrets/django-secrets.json
+    volumes:
+      - api-media:/usr/app/ancean/media      
+      - api-static:/usr/app/ancean/static
+    depends_on:
+      - db
+    networks:
+      - ancean-prod-net
+
+  db:
+    image: mariadb:11.4
+    deploy:
+      mode: global
+    environment:
+      MYSQL_DATABASE: ancean
+      MYSQL_USER: ancean
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - $PWD/backup:/backup
+    env_file:
+      - .env
+    networks:
+      - ancean-prod-net
+
+configs:
+  nginx-conf:
+    file: ./swarm/configs/nginx/nginx-prod.conf
+
+secrets:
+  api-secrets:
+    file: ./swarm/secrets/django-secrets.json
+
+volumes:
+  mysql-data:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=172.31.18.234,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
+      device: "172.31.18.234:/efs/mysql"
+
+  api-media:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=172.31.18.234,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
+      device: "172.31.18.234:/efs/api/media"
+
+  api-static:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=172.31.18.234,nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
+      device: "172.31.18.234:/efs/api/static"
+
+  # nginx-cache:
+    
+
+networks:
+  ancean-prod-net:
