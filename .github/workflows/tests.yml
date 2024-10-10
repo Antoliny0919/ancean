@@ -1,0 +1,44 @@
+name: Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+ 
+  push:
+    branches:
+      - main
+
+jobs:
+  unit-test:
+    name: Unit-Tests Django API
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/api/
+    strategy:
+      matrix:
+        python-version:
+          - "3.11"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Create Secret and Image Storage Folder
+        run: mkdir -p ${{ github.workspace}}/api/ancean/{secrets,media}
+      - name: Apply Secrets
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.3
+        with:
+          name: "django-secrets.json"
+          json: ${{ secrets.DJANGO_SECRETS }}
+          dir: "api/ancean/secrets/"
+      - name: Run Tests
+        run: python manage.py test --settings=ancean.settings.local
