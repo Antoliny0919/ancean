@@ -1,0 +1,32 @@
+name: Unit Tests
+
+on:
+  pull_request:
+   
+  push:
+    branches:
+      - main
+
+jobs:
+  unit-test:
+    name: unit-test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.11"
+    steps:
+      - name: Checkout
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Dependencies
+        working-directroy: ${{ github.workspace }}/api
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r test-requirements.txt
+      - name: Run Tests
+        run: |
+          python manage.py test
